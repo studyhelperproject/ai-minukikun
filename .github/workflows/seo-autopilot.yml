@@ -1,0 +1,21 @@
+name: Cloud SEO & Sitemap Autopilot
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  seo-ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ping IndexNow Search Engines
+        run: |
+          curl -s -o /dev/null -w "Bing IndexNow HTTP: %{http_code}\n" "https://www.bing.com/indexnow?url=https://studyhelperproject.github.io/ai-minukikun/&key=426d5b75c2bb457ca034a31745a2300b" || true
+          curl -s -o /dev/null -w "IndexNow Main LP: %{http_code}\n" "https://api.indexnow.org/indexnow?url=https://studyhelperproject.github.io/ai-minukikun/lp-matching.html&key=426d5b75c2bb457ca034a31745a2300b" || true

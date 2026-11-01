@@ -905,23 +905,34 @@ async function redeemLicenseCode() {
   }
 }
 
+// 決済ゲートウェイURL（Stripe Payment Link / note有料記事URL / BOOTH商品URL）
+// set_payment_url.py スクリプトまたはオーナー設定から本番URLが設定されます
+const DEFAULT_PAYMENT_URLS = {
+  pass_980: "",
+  pro_1480: "",
+  biz_3980: "",
+};
+
 function completePurchase(planId) {
-  const customCheckoutUrl = localStorage.getItem("truthlens_checkout_url") || "";
+  const customCheckoutUrl = localStorage.getItem("truthlens_checkout_url") || DEFAULT_PAYMENT_URLS[planId] || DEFAULT_PAYMENT_URLS.pass_980 || "";
   if (customCheckoutUrl && customCheckoutUrl.startsWith("https://")) {
     window.open(customCheckoutUrl, "_blank", "noopener,noreferrer");
+    const codeInput = document.getElementById("licenseCodeInput");
+    if (codeInput) {
+      codeInput.focus();
+      codeInput.placeholder = "決済完了後に表示されたシリアルコードをここに入力";
+    }
+    return;
   }
 
-  recordLocalOrder(planId, `アプリ内決済 (${lastPaywallTrigger})`);
-  isProUnlocked = true;
-  localStorage.setItem("truthlens_pro", "1");
-  updateQuotaUI();
-  closePaywallModal();
-
-  if (lastAnalysisResult) {
-    renderPremiumSection(lastAnalysisResult);
+  // 決済URL未設定時は無料解放（タダ乗り）を絶対に行わず、シリアルコード入力欄へ誘導する
+  const codeInput = document.getElementById("licenseCodeInput");
+  if (codeInput) {
+    codeInput.focus();
   }
-  refreshDashboard();
-  alert("🎉 Pro監査パスが有効化されました！\nすべての文単位ハイライト・確認返信テンプレート・監査証明書出力がアンロックされました。");
+  alert(
+    "【ご購入・アンロック手順】\n1. 公式note有料記事またはStripe決済ページにて『シリアルコード』をご購入ください。\n2. 発行されたシリアルコードを上の入力欄に入力し、『暗号照合して即時アンロック』を押すと全機能が解放されます。"
+  );
 }
 
 // ==========================================
