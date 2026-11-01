@@ -1,9 +1,9 @@
 import base64
+import hashlib
 import io
 import json
 import mimetypes
 import os
-import re
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
@@ -15,25 +15,30 @@ import analyzer
 import database
 
 PORT = int(os.environ.get("PORT", "8080"))
+# ローカルPC実行時は外部からのアクセスを完全遮断するため 127.0.0.1 のみにバインド（クラウドコンテナ環境のみ 0.0.0.0）
+BIND_HOST = "0.0.0.0" if os.environ.get("CLOUD_CONTAINER") == "1" else "127.0.0.1"
 STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 
-# 外部決済プラットフォームURL（Stripe Payment Links / note有料記事 / PayPay決済リンク等）
-PAYMENT_CONFIG = {
-    "stripe_pass_980_url": os.environ.get("STRIPE_PASS_980_URL", ""),
-    "stripe_pro_1480_url": os.environ.get("STRIPE_PRO_1480_URL", ""),
-    "stripe_biz_3980_url": os.environ.get("STRIPE_BIZ_3980_URL", ""),
-    "note_article_url": os.environ.get("NOTE_ARTICLE_URL", ""),
+LICENSE_SALT = "MINUKI_SALT_2026_JP#"
+
+# 平文のシリアルコードをソースコード内に保持せず、ソルト付きSHA-256ハッシュ値のみで照合
+VALID_LICENSE_HASHES = {
+    "96ed3b24dcbfa81c18504db99d02b45e6f86d76e650c287c60ab0c5739d905de": ("pass_980", "シリアルコード認証（980円パス）"),
+    "992af19703ea5c7fe08d225a227040ca0baab7603077897bd55fbcf8401ac678": ("pro_1480", "Proプラン シリアルコード認証"),
+    "468f3568f6c56524d53a6eba46f5923aa244822e6959791afd5f576a6aeacf25": ("biz_3980", "法人パック シリアルコード認証"),
+    "5f1012ab89c3544e32e901b7248691f16f0e752bf1b4af5e34c5e383480c25c0": ("pass_980", "個別発行シリアルコード認証 #1"),
+    "a260d78beb8f7f306bd14d0d129a96ef48ff3dd03b15daa063f4271daa466e06": ("pass_980", "個別発行シリアルコード認証 #2"),
+    "2f966cff15668df267453cd8fd7602f6c78f64425775c871ad0987b14f4439bc": ("pass_980", "個別発行シリアルコード認証 #3"),
+    "0b74516e5e92a7f33b57d187278c076228b939150ac74d3dbb5487f58952bab5": ("pass_980", "個別発行シリアルコード認証 #4"),
+    "6958bcb68945dfd363643f7ddf62c59e3aed250821bc51319f52bb06c11d05d0": ("pass_980", "個別発行シリアルコード認証 #5"),
 }
 
-VALID_LICENSE_CODES = {
-    "MINUKI-980-PASS": ("pass_980", "note/BOOTH シリアルコード認証（980円パス）"),
-    "MINUKI-1480-PRO": ("pro_1480", "Proプラン シリアルコード認証"),
-    "MINUKI-3980-BIZ": ("biz_3980", "法人パック シリアルコード認証"),
-}
+
+def hash_license_code(code: str) -> str:
+    return hashlib.sha256((LICENSE_SALT + code.strip().upper()).encode("utf-8")).hexdigest()
 
 
 def create_demo_image_bytes(kind: str) -> bytes:
-    """ワンクリック検証用のテスト画像（AIメタデータ埋め込み画像 or 撮影レポート風画像）を動的生成"""
     if kind == "ai_art":
         import numpy as np
 
@@ -69,7 +74,6 @@ def create_demo_image_bytes(kind: str) -> bytes:
 
 
 def create_demo_docx_bytes() -> bytes:
-    """クラウドワークス納品記事・大学レポート風のデモWordファイル（リビジョン1回＝コピペ保存）を生成"""
     import docx
 
     doc = docx.Document()
@@ -94,28 +98,31 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
     def log_message(self, format: str, *args) -> None:
         pass
 
+    def _add_security_headers(self) -> None:
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com; frame-ancestors 'none';",
+        )
+
     def _send_json(self, data: dict, status: int = 200) -> None:
         body = json.dumps(data, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self._add_security_headers()
         self.end_headers()
         self.wfile.write(body)
 
     def _read_json_body(self) -> dict:
         length = int(self.headers.get("Content-Length", "0"))
-        if length <= 0:
+        if length <= 0 or length > 15 * 1024 * 1024:  # 15MB上限（DoS防御）
             return {}
         raw = self.rfile.read(length)
         return json.loads(raw.decode("utf-8"))
-
-    def do_OPTIONS(self) -> None:
-        self.send_response(204)
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
-        self.end_headers()
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
@@ -124,7 +131,6 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
         if path == "/api/dashboard":
             data = database.get_revenue_dashboard()
             data["recent_scans"] = database.get_recent_scans(10)
-            data["payment_config"] = PAYMENT_CONFIG
             self._send_json(data)
             return
 
@@ -157,12 +163,12 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
             )
             return
 
-        # 静的ファイルの配信
-        if path in ("/", "", "/tokushoho", "/privacy", "/lp/matching", "/lp/crowdworks", "/lp/report"):
+        # ディレクトリトラバーサル完全防止
+        if path in ("/", "", "/tokushoho", "/privacy"):
             file_path = os.path.join(STATIC_DIR, "index.html")
         else:
-            rel_path = path.lstrip("/").replace("/", os.sep)
-            file_path = os.path.join(STATIC_DIR, rel_path)
+            safe_name = os.path.basename(path.lstrip("/"))
+            file_path = os.path.join(STATIC_DIR, safe_name)
 
         if os.path.isfile(file_path):
             mime_type, _ = mimetypes.guess_type(file_path)
@@ -177,6 +183,7 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
                 else mime_type,
             )
             self.send_header("Content-Length", str(len(content)))
+            self._add_security_headers()
             self.end_headers()
             self.wfile.write(content)
         else:
@@ -190,9 +197,9 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
             body = self._read_json_body()
 
             if path == "/api/analyze/text":
-                text = body.get("text", "")
+                text = body.get("text", "")[:20000]
                 mode = body.get("mode", "messenger")
-                reference_text = body.get("reference_text", "")
+                reference_text = body.get("reference_text", "")[:20000]
                 api_key = body.get("api_key", "")
 
                 res = analyzer.analyze_text(
@@ -204,15 +211,12 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
                 if "error" in res:
                     self._send_json(res, status=400)
                     return
-
-                scan_id = database.record_scan(mode, text[:80], res)
-                res["scan_id"] = scan_id
                 self._send_json(res)
                 return
 
             if path == "/api/analyze/image":
                 data_url = body.get("image_base64", "")
-                filename = body.get("filename", "upload.png")
+                filename = os.path.basename(body.get("filename", "upload.png"))
                 mode = body.get("mode", "image_forensics")
                 api_key = body.get("api_key", "")
 
@@ -231,15 +235,12 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
                 if "error" in res:
                     self._send_json(res, status=400)
                     return
-
-                scan_id = database.record_scan(mode, f"[画像] {filename}", res)
-                res["scan_id"] = scan_id
                 self._send_json(res)
                 return
 
             if path == "/api/analyze/document":
                 data_url = body.get("file_base64", "")
-                filename = body.get("filename", "report.pdf")
+                filename = os.path.basename(body.get("filename", "report.pdf"))
                 api_key = body.get("api_key", "")
 
                 if "," in data_url:
@@ -256,34 +257,21 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
                 if "error" in res:
                     self._send_json(res, status=400)
                     return
-
-                scan_id = database.record_scan("document", f"[書類] {filename}", res)
-                res["scan_id"] = scan_id
                 self._send_json(res)
                 return
 
             if path == "/api/verify-license":
                 code = (body.get("code") or "").strip().upper()
-                if code in VALID_LICENSE_CODES:
-                    plan_id, channel = VALID_LICENSE_CODES[code]
+                digest = hash_license_code(code)
+                if digest in VALID_LICENSE_HASHES:
+                    plan_id, channel = VALID_LICENSE_HASHES[digest]
                     dash = database.record_order(plan_id, channel)
                     self._send_json({"ok": True, "plan_id": plan_id, "dashboard": dash})
                     return
-                if re.match(r"^AI-2026-[A-Z0-9]{4}$", code):
-                    dash = database.record_order("pass_980", f"シリアルコード認証 ({code})")
-                    self._send_json({"ok": True, "plan_id": "pass_980", "dashboard": dash})
-                    return
                 self._send_json(
-                    {"ok": False, "error": "無効なシリアルコードです。購入完了メールまたはnote有料エリアに記載されたコードをご確認ください。"},
+                    {"ok": False, "error": "無効なシリアルコードです。購入完了ページに記載されたコードをご確認ください。"},
                     status=400,
                 )
-                return
-
-            if path == "/api/payment-config":
-                for k in ("stripe_pass_980_url", "stripe_pro_1480_url", "stripe_biz_3980_url", "note_article_url"):
-                    if k in body:
-                        PAYMENT_CONFIG[k] = str(body[k]).strip()
-                self._send_json({"ok": True, "payment_config": PAYMENT_CONFIG})
                 return
 
             if path == "/api/order/simulate":
@@ -293,28 +281,28 @@ class TruthLensRequestHandler(BaseHTTPRequestHandler):
                     dash = database.reset_orders(reset_mode)
                 else:
                     plan_id = body.get("plan_id", "pass_980")
-                    channel = body.get("channel", "アプリ内ペイウォール直課金")
+                    channel = body.get("channel", "アプリ内課金")
                     dash = database.record_order(plan_id, channel)
                 self._send_json(dash)
                 return
 
             if path == "/api/metric":
                 key = body.get("key", "paywall_views")
-                database.increment_metric(key, 1)
+                if key in ("paywall_views", "share_clicks", "free_scans_total"):
+                    database.increment_metric(key, 1)
                 self._send_json({"ok": True})
                 return
 
             self._send_json({"error": "Unknown endpoint"}, status=404)
 
-        except Exception as e:
-            traceback.print_exc()
-            self._send_json({"error": f"サーバー処理エラー: {str(e)}"}, status=500)
+        except Exception:
+            self._send_json({"error": "リクエスト処理中にエラーが発生しました。"}, status=500)
 
 
 def run_server() -> None:
     database.init_db()
-    server = ThreadingHTTPServer(("0.0.0.0", PORT), TruthLensRequestHandler)
-    print(f"AI見抜きくん Pro Server running at http://127.0.0.1:{PORT}")
+    server = ThreadingHTTPServer((BIND_HOST, PORT), TruthLensRequestHandler)
+    print(f"AI見抜きくん Pro Server running on {BIND_HOST}:{PORT}")
     server.serve_forever()
 
 
