@@ -1,0 +1,9 @@
+{
+  "name": "TruthLens AI - AI文章・撮影レポート・画像真贋監査ツール",
+  "short_name": "TruthLens AI",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0f19",
+  "theme_color": "#6366f1",
+  "description": "メール・LINE・撮影レポート・画像のAI生成疑惑をハイブリッド統計＆フォレンジック技術で即座に判定"
+}

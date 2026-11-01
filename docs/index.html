@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI見抜きくん Pro | LINE・マッチングアプリ・外注記事・課題レポート・出品画像のAI作成＆代筆チェッカー</title>
+  <meta name="description" content="LINEやマッチングアプリの返信、クラウドワークスの外注納品記事、就活ES・大学レポート、メルカリ出品画像がAI（ChatGPTや画像生成AI）で作られたものか3秒で判定。普段の本人文体との比較やWord一括コピペ検知・監査証明書PDF出力に対応。" />
+  <meta property="og:title" content="AI見抜きくん Pro | LINE・外注記事・レポート・画像のAI真贋チェッカー" />
+  <meta property="og:description" content="そのLINE返信や納品記事、AI丸投げかも？文体指紋（本人らしさ）のズレや画像の圧縮誤差ヒートマップでAI疑惑を即座に数値化！" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "AI見抜きくん Pro",
+    "applicationCategory": "SecurityApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "980",
+      "priceCurrency": "JPY"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">🔍</div>
+        <div>
+          <div class="brand-title">
+            AI見抜きくん Pro
+            <span class="brand-badge">日本特化・高精度監査エンジン</span>
+          </div>
+          <div class="brand-sub">LINE・マッチングアプリ・外注記事・撮影レポート・出品画像のAI真贋チェッカー</div>
+        </div>
+      </div>
+
+      <div class="header-Right">
+        <div id="profitHeaderPill" class="profit-pill" onclick="switchTab('revenue')" title="クリックして収益計画＆集客・決済管理画面を開く">
+          <span>💰 今月の純利益:</span>
+          <strong id="headerNetProfit">¥3,305</strong>
+          <span>/ 目標 ¥10,000</span>
+        </div>
+
+        <div id="quotaPill" class="quota-pill">
+          <span>無料お試し残り:</span>
+          <strong id="freeQuotaCount">3 / 3回</strong>
+        </div>
+
+        <button class="btn btn-gold btn-sm" onclick="openPaywallModal('ヘッダーProパスボタン')">
+          🔓 パス購入 / コード入力
+        </button>
+
+        <button class="btn btn-outline btn-sm" onclick="openSettingsModal()" title="APIキー・決済リンク設定">
+          ⚙️ 設定
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Japanese Target Niche Banner -->
+    <div style="background: linear-gradient(90deg, rgba(99,102,241,0.16), rgba(6,182,212,0.12)); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.75rem 1.1rem; margin-bottom: 1.15rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+      <div style="font-size: 0.84rem;">
+        🇯🇵 <strong>日本の4大トラブル完全対応：</strong>
+        ①ペアーズ/LINEのAI業者・ロマンス詐欺検知 ／ ②クラウドワークス/ランサーズ記事のChatGPT丸投げ検収 ／ ③就活ES・大学レポートの代筆証明 ／ ④メルカリ・SNSのAI生成画像検知
+      </div>
+      <span style="font-size: 0.75rem; color: #34d399; font-weight: 700;">✓ 登録不要・3秒で無料診断</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="messenger" onclick="switchTab('messenger')">
+        💬 LINE・マッチングアプリ・外注記事判定
+      </button>
+      <button class="tab-btn" data-tab="stylometry" onclick="switchTab('stylometry')">
+        🧬 本人文体との比較（代筆・なりすまし検知） <span class="tab-badge-hot">人気No.1</span>
+      </button>
+      <button class="tab-btn" data-tab="photo_report" onclick="switchTab('photo_report')">
+        📸 撮影レポート・メルカリ/SNS画像判定
+      </button>
+      <button class="tab-btn" data-tab="document" onclick="switchTab('document')">
+        📄 Word / PDF レポート丸投げ監査
+      </button>
+      <button class="tab-btn" data-tab="revenue" onclick="switchTab('revenue')">
+        💴 収益・集客・決済管理コックピット
+      </button>
+    </nav>
+
+    <!-- Main Workspace (Tabs 1 to 4) -->
+    <div id="inspectorWorkspace" class="workspace-grid">
+
+      <!-- Left Column: Input Panel -->
+      <div class="card input-column">
+
+        <!-- Mode 1: Messenger / Email / CrowdWorks / ES -->
+        <div id="panel-messenger" class="mode-panel">
+          <div class="card-header">
+            <div class="card-title">💬 LINE・マッチングアプリ・メール・外注記事判定</div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">ChatGPT構文・業者テンプレ・就活ES対応</span>
+          </div>
+
+          <div class="sample-bar">
+            <span class="sample-label">🧪 日本語リアル検証サンプル（1クリック読込）:</span>
+            <button class="btn btn-outline btn-sm" onclick="loadSample('scam_dm')">① マッチングアプリ業者・LINE誘導DM</button>
+            <button class="btn btn-outline btn-sm" onclick="loadSample('cw_article')">② クラウドワークス納品AI記事</button>
+            <button class="btn btn-outline btn-sm" onclick="loadSample('ai_es')">③ 就活ES（ガクチカ）AI作成文</button>
+            <button class="btn btn-outline btn-sm" onclick="loadSample('human_chat')">④ 人間が書いた自然なLINE連絡</button>
+          </div>
+
+          <textarea id="messengerText" class="input-area" placeholder="ここに調べたいLINEのメッセージ、マッチングアプリの返信、クラウドワークスの納品記事、または就活ES・課題レポートの文章を貼り付けてください..."></textarea>
+
+          <div style="margin-top: 1rem; display: flex; gap: 0.75rem; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <span id="charCountInfo" style="font-size: 0.8rem; color: var(--text-muted);">文字数: 0文字</span>
+            <button class="btn btn-primary" onclick="runTextAnalysis('messenger')">
+              🔍 AI作成・業者テンプレ疑惑を判定する
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode 2: Stylometry (Author Fingerprint Comparison) -->
+        <div id="panel-stylometry" class="mode-panel" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">🧬 本人文体との比較監査（代筆・AI丸投げ証明）</div>
+            <span class="tab-badge-hot">外注検収・教員・浮気調査で高課金率</span>
+          </div>
+          <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 0.9rem;">
+            「普段その人が送ってくるLINEやチャット」と「今回提出されたレポート・納品記事・長文LINE」の<strong>文体クセ（読点のリズム・漢字の割合・助詞の使い方）</strong>を比較し、<strong>別人が書いた（またはChatGPTに書かせた）確率</strong>を証明します。
+          </p>
+
+          <div class="sample-bar">
+            <span class="sample-label">🧪 比較サンプル:</span>
+            <button class="btn btn-outline btn-sm" onclick="loadSample('stylometry_case')">外注ライターの普段のチャット vs 納品されたAI記事を比較</button>
+          </div>
+
+          <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #38bdf8;">
+            【A】普段の本人の文章（過去のLINE・チャットワーク・メール等）
+          </label>
+          <textarea id="refText" class="input-area" style="min-height: 115px; margin-bottom: 0.85rem;" placeholder="例：お疲れ様です！昨日の件なんですけど、ちょっと確認したいことがあって連絡しました〜。また時間ある時で大丈夫なので教えてもらえると助かります🙏"></textarea>
+
+          <label style="font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #f87171;">
+            【B】今回疑わしい文章（提出されたレポート・納品原稿・突然の長文謝罪LINE等）
+          </label>
+          <textarea id="targetStylometryText" class="input-area" style="min-height: 145px;" placeholder="今回送られてきた疑わしい文章を貼り付けてください..."></textarea>
+
+          <div style="margin-top: 1rem; text-align: right;">
+            <button class="btn btn-primary" onclick="runTextAnalysis('stylometry')">
+              🧬 本人文体とのズレ（代筆・AI使用率）を監査する
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode 3: Photo Report & Image Forensics -->
+        <div id="panel-photo_report" class="mode-panel" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">📸 撮影レポート・メルカリ出品画像・SNSアイコン真贋判定</div>
+          </div>
+          <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 0.9rem;">
+            スマホで撮影した紙の課題レポート・PC画面の写真、またはマッチングアプリの顔写真・メルカリ出品画像を検査します。<br/>
+            <strong>iPhone/Android撮影EXIFの有無・画像生成AIの隠し署名（Stable Diffusion/Midjourney）・ELA（圧縮誤差ヒートマップ）</strong>を可視化します。
+          </p>
+
+          <div class="sample-bar">
+            <span class="sample-label">🧪 検証用デモ画像:</span>
+            <button class="btn btn-outline btn-sm" onclick="loadDemoImage('ai_art')">① マッチングアプリ/SNSのAI生成美女アイコン（SDXL署名入り）</button>
+            <button class="btn btn-outline btn-sm" onclick="loadDemoImage('report_photo')">② スマホカメラで撮影した紙レポート画像</button>
+          </div>
+
+          <div style="margin-bottom: 0.85rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <label style="font-size: 0.84rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+              <input type="radio" name="imgSubMode" value="image_forensics" checked />
+              🖼️ 顔写真・出品画像のAI生成/加工フェイク検査
+            </label>
+            <label style="font-size: 0.84rem; display: flex; align-items: center; gap: 0.35rem; cursor: pointer;">
+              <input type="radio" name="imgSubMode" value="photo_report" />
+              📝 スマホ撮影した紙レポート・画面のAI作成検査
+            </label>
+          </div>
+
+          <div class="dropzone" onclick="document.getElementById('imageFileInput').click()">
+            <div style="font-size: 2rem; margin-bottom: 0.4rem;">📷 / 🖼️</div>
+            <div style="font-weight: 700; margin-bottom: 0.25rem;">タップして写真を選択 または スマホカメラで撮影</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">PNG / JPEG / WebP 対応（EXIF検査＆ELA圧縮誤差ヒートマップ生成）</div>
+            <input type="file" id="imageFileInput" accept="image/*" capture="environment" style="display: none;" onchange="handleImageFileSelect(event)" />
+          </div>
+
+          <div id="imagePreviewBox" class="preview-img-box" style="display: none;">
+            <div id="selectedImageName" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;"></div>
+            <img id="imagePreviewEl" src="" alt="Preview" />
+          </div>
+
+          <div style="margin-top: 1rem; text-align: right;">
+            <button class="btn btn-primary" onclick="runImageAnalysis()">
+              🔬 画像のAI生成痕跡＆ヒートマップ解析を実行
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode 4: PDF / Word Document Direct Audit -->
+        <div id="panel-document" class="mode-panel" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">📄 Word (.docx) / PDF 納品原稿・課題レポート丸投げ監査</div>
+          </div>
+          <p style="font-size: 0.83rem; color: var(--text-muted); margin-bottom: 0.9rem;">
+            提出された <code>.docx</code>（Word）や <code>.pdf</code> ファイルの内部プロパティを検査します。<br/>
+            <strong>「3,000文字の長文なのにWordの保存回数（リビジョン）が1回しかない＝ChatGPTから一括コピペして即保存した証拠」</strong>などを自動検出します！
+          </p>
+
+          <div class="sample-bar">
+            <span class="sample-label">🧪 ワンクリック検証サンプル:</span>
+            <button class="btn btn-outline btn-sm" onclick="loadDemoDocx()">📑 外注ライターの「一括コピペ保存Wordファイル(.docx)」を検証する</button>
+          </div>
+
+          <div class="dropzone" onclick="document.getElementById('docFileInput').click()">
+            <div style="font-size: 2rem; margin-bottom: 0.4rem;">📑</div>
+            <div style="font-weight: 700; margin-bottom: 0.25rem;">Word (.docx) / PDF (.pdf) / テキスト (.txt) を選択</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">ファイルの隠し編集履歴（リビジョン回数）＋全文AI構文解析を同時実行</div>
+            <input type="file" id="docFileInput" accept=".pdf,.docx,.txt" style="display: none;" onchange="handleDocFileSelect(event)" />
+          </div>
+
+          <div id="docFileInfo" style="font-size: 0.85rem; color: #38bdf8; margin-bottom: 0.85rem; display: none;"></div>
+
+          <div style="margin-top: 1rem; text-align: right;">
+            <button class="btn btn-primary" onclick="runDocumentAnalysis()">
+              📄 ファイル内部履歴＆AI丸投げ監査を実行
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Result & Evidence Report Panel -->
+      <div class="card" id="resultCard">
+        <div class="card-header">
+          <div class="card-title">📊 AI真贋・フォレンジック監査結果</div>
+          <div class="no-print" style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <button class="btn btn-outline btn-sm" onclick="shareResultOnX()">𝕏 診断結果をポスト</button>
+            <button class="btn btn-outline btn-sm" onclick="shareResultOnLine()">💬 LINEで共有</button>
+            <button class="btn btn-outline btn-sm" onclick="printAuditCertificate()">🖨️ 監査証明書PDF保存</button>
+          </div>
+        </div>
+
+        <div id="resultEmptyState" style="padding: 3rem 1rem; text-align: center; color: var(--text-muted);">
+          <div style="font-size: 2.6rem; margin-bottom: 0.75rem;">🛡️</div>
+          <div style="font-weight: 700; color: var(--text-main); margin-bottom: 0.4rem;">
+            左側のパネルから文章または画像を選択して判定を開始してください
+          </div>
+          <p style="font-size: 0.83rem;">
+            上の「🧪 日本語リアル検証サンプル」ボタンを押すと、マッチングアプリ業者DM・クラウドワークスAI記事・AI美女アイコンの判定を1秒で体験できます。
+          </p>
+        </div>
+
+        <div id="resultContent" style="display: none;">
+          <!-- Hero Gauge -->
+          <div class="score-hero">
+            <div id="gaugeCircle" class="gauge-circle danger">
+              <div id="gaugeNum" class="gauge-num">88%</div>
+              <div class="gauge-label">AI疑惑スコア</div>
+            </div>
+            <div>
+              <span id="verdictBadge" class="verdict-badge danger">AI生成の可能性【極高】</span>
+              <p id="verdictSummary" style="font-size: 0.86rem; color: var(--text-main);"></p>
+              <div id="analyzedTimestamp" style="font-size: 0.73rem; color: var(--text-muted); margin-top: 0.35rem;"></div>
+            </div>
+          </div>
+
+          <!-- Quantitative Metrics -->
+          <div id="metricsGrid" class="metrics-grid"></div>
+
+          <!-- Stylometry Box -->
+          <div id="stylometryResultBox" style="display: none; margin-bottom: 1.25rem; background: rgba(99, 102, 241, 0.08); border: 1px solid var(--primary); padding: 1rem; border-radius: 10px;"></div>
+
+          <!-- ELA / Forensic Heatmap Box -->
+          <div id="elaPreviewContainer" style="display: none; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.45rem;">
+              🔬 画像圧縮誤差（ELA）ヒートマップ＆センサーノイズ検査
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; align-items: center;">
+              <div style="text-align: center;">
+                <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.25rem;">検査対象の画像</div>
+                <img id="resultOrigImg" src="" style="max-width: 100%; max-height: 210px; border-radius: 8px; border: 1px solid var(--border-color);" />
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 0.74rem; color: #38bdf8; margin-bottom: 0.25rem;">AI平滑化・加工誤差ヒートマップ</div>
+                <img id="resultElaImg" src="" style="max-width: 100%; max-height: 210px; border-radius: 8px; border: 1px solid var(--primary);" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Detected Forensic Signals -->
+          <div style="font-size: 0.88rem; font-weight: 700; margin-bottom: 0.5rem;">
+            📌 検出されたAI痕跡・判定根拠リスト
+          </div>
+          <div id="signalsList" class="signal-list"></div>
+
+          <!-- LLM Deep Insight -->
+          <div id="llmDeepBox" style="display: none; margin-bottom: 1.25rem; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--accent); padding: 0.9rem; border-radius: 10px; font-size: 0.85rem;"></div>
+
+          <!-- Sentence-by-Sentence & Confrontation Templates -->
+          <div id="premiumEvidenceSection"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Revenue & Marketing Command Center -->
+    <div id="revenueWorkspace" style="display: none;">
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div class="card-header">
+          <div>
+            <div class="card-title" style="font-size: 1.2rem;">
+              💴 月利10,000円達成コックピット（売上・集客・即時販売パッケージ）
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted);">
+              GitHub Pages（永久無料ホスティング）＋ Cloudflare Tunnel により<strong>サーバー固定費0円</strong>で稼働中。<strong>980円パスが月11件売れるだけで純利益10,360円を達成</strong>します。
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" onclick="simulateOrder('pass_980', 'note有料記事シリアル購入')">
+              ＋ 980円パス売上を計上
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="simulateOrder('pro_1480', 'クラウドワークス発注者契約')">
+              ＋ 1,480円Pro契約を計上
+            </button>
+            <button class="btn btn-gold btn-sm" onclick="resetRevenueSim('goal_reached')">
+              🎯 月利1万円突破シミュレーションを表示
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="resetRevenueSim('zero')">
+              🔄 0円にリセット
+            </button>
+          </div>
+        </div>
+
+        <!-- Goal Progress Bar -->
+        <div style="background: var(--bg-input); padding: 1.15rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1.35rem;">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
+            <div>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">月間純利益目標（¥10,000）達成率:</span>
+              <strong id="revProgressPct" style="font-size: 1.45rem; color: #34d399; margin-left: 0.4rem;">33.1%</strong>
+            </div>
+            <div id="revRemainingText" style="font-size: 0.85rem; color: var(--gold); font-weight: 700;">
+              目標達成まであと ¥6,695（980円パス残り 8件！）
+            </div>
+          </div>
+          <div class="progress-bar-outer">
+            <div id="revProgressBar" class="progress-bar-inner" style="width: 33.1%;"></div>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card highlight">
+            <div class="metric-title">今月の純利益（手残り利益）</div>
+            <div id="kpiNetProfit" style="font-size: 1.8rem; font-weight: 900; color: #34d399;">¥3,305</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.25rem;">売上 − 決済手数料 − API原価</div>
+          </div>
+          <div class="kpi-card">
+            <div class="metric-title">総売上高（Gross Revenue）</div>
+            <div id="kpiGrossRev" style="font-size: 1.55rem; font-weight: 800;">¥3,440</div>
+            <div id="kpiOrdersCount" style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.25rem;">課金件数: 3件</div>
+          </div>
+          <div class="kpi-card">
+            <div class="metric-title">変動費合計（手数料＋API原価）</div>
+            <div id="kpiTotalCost" style="font-size: 1.55rem; font-weight: 800; color: #f87171;">¥135</div>
+            <div style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.25rem;">サーバー固定費: ¥0（GitHub Pages併用）</div>
+          </div>
+          <div class="kpi-card">
+            <div class="metric-title">無料診断数 → 課金転換率 (CVR)</div>
+            <div id="kpiCvr" style="font-size: 1.55rem; font-weight: 800; color: #38bdf8;">2.11%</div>
+            <div id="kpiFreeScans" style="font-size: 0.74rem; color: var(--text-muted); margin-top: 0.25rem;">累計無料スキャン: 142回</div>
+          </div>
+        </div>
+
+        <!-- Ready-to-Publish Japanese Monetization & Marketing Assets -->
+        <div class="workspace-grid">
+          <div>
+            <h3 style="font-size: 0.98rem; margin-bottom: 0.75rem;">🔥 審査0秒で今日から売れる「note有料記事（980円）」＆SNS集客原稿</h3>
+
+            <div class="template-card">
+              <div style="font-size: 0.82rem; font-weight: 700; color: var(--gold); margin-bottom: 0.3rem;">
+                ①【審査不要・即日現金化】note.com 980円有料記事テンプレート（シリアルコード自動連携済）
+              </div>
+              <p style="font-size: 0.76rem; color: var(--text-muted); margin-bottom: 0.45rem;">
+                Stripe等の審査を待たず、日本の個人開発者が最速で月1万円を稼ぐ方法です。以下の文章をnoteに貼り付けて「980円」で公開するだけで、購入者が有料エリアのシリアルコード <code>MINUKI-980-PASS</code> をアプリに入力して即Pro解放されます。
+              </p>
+              <textarea id="noteArticleTemplate" readonly style="width: 100%; height: 115px; background: #080b12; color: #cbd5e1; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.55rem; font-size: 0.76rem; margin-bottom: 0.45rem;">【タイトル】LINE・マッチングアプリのAI業者や、クラウドワークスのChatGPT丸投げ記事を3秒で見抜く『AI見抜きくん Pro』7日間徹底監査パス
+
+「マッチングアプリの返信、丁寧だけどAIっぽい…」「外注ライターから納品されたWord記事、ChatGPTのコピペかも…」
+そんな悩みを3秒で解決するWebツール『AI見抜きくん Pro』を公開しました！
+
+▼ 無料で今すぐお試しいただけます（1日3回まで登録不要）
+https://studyhelperproject.github.io/ai-minukikun/
+
+本記事をご購入いただくと、以下の【有料エリア】に記載された専用シリアルコードを使って、
+・文単位のAI根拠ハイライト全表示
+・相手に角を立てずに確認＆カマかけできる返信テンプレート3選
+・公式監査証明書PDF出力（検収差し戻し・交渉用）
+がすべて無制限にアンロックされます！
+
+--- ここから有料ライン（980円） ---
+ご購入ありがとうございます！
+以下のシリアルコードを『AI見抜きくん Pro』右上の「🔓 パス購入 / コード入力」に入力してください。
+
+【専用シリアルコード】：MINUKI-980-PASS</textarea>
+              <button class="btn btn-gold btn-sm" onclick="copyTextValue(document.getElementById('noteArticleTemplate').value)">📋 note記事全文（シリアル付）をコピー</button>
+            </div>
+
+            <div class="template-card">
+              <div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.3rem;">
+                ② X (旧Twitter) 集客バズ投稿（ワンクリックで投稿画面を開く）
+              </div>
+              <p id="mktCopy1" style="font-size: 0.8rem; color: var(--text-main); margin-bottom: 0.5rem;">
+                マッチングアプリのLINE誘導や、クラウドワークスの外注記事が「ChatGPT丸投げ」か3秒で見抜く日本特化ツール『AI見抜きくん Pro』を公開しました🔍
+                普段のチャットとの「文体クセのズレ」や、Wordファイルの「保存回数1回（一括コピペ証拠）」まで自動で暴きます👇
+                https://studyhelperproject.github.io/ai-minukikun/
+              </p>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-primary btn-sm" onclick="window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(document.getElementById('mktCopy1').innerText), '_blank')">𝕏 今すぐXにポストして集客する</button>
+                <button class="btn btn-outline btn-sm" onclick="copyTextValue(document.getElementById('mktCopy1').innerText)">📋 コピー</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h3 style="font-size: 0.98rem; margin-bottom: 0.75rem;">🧾 直近の課金トランザクション＆純利益台帳</h3>
+            <div style="overflow-x: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>日時</th>
+                    <th>プラン</th>
+                    <th>売上</th>
+                    <th>手数料・原価</th>
+                    <th>純利益</th>
+                    <th>流入経路</th>
+                  </tr>
+                </thead>
+                <tbody id="ordersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer with Japanese Legal Links (Required for Stripe / Payment Gateways) -->
+    <footer class="no-print" style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem; color: var(--text-muted);">
+      <div>© 2026 AI見抜きくん Pro (StudyHelperProject). All rights reserved.</div>
+      <div style="display: flex; gap: 1.2rem; flex-wrap: wrap;">
+        <a href="javascript:void(0)" onclick="openLegalModal('tokushoho')" style="color: var(--text-muted);">特定商取引法に基づく表記</a>
+        <a href="javascript:void(0)" onclick="openLegalModal('privacy')" style="color: var(--text-muted);">プライバシーポリシー</a>
+        <a href="javascript:void(0)" onclick="openLegalModal('terms')" style="color: var(--text-muted);">利用規約</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <!-- Paywall / License Key & Stripe Checkout Modal -->
+  <div id="paywallModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <div style="font-size: 1.12rem; font-weight: 800; color: var(--gold);">
+          🔓 Pro監査パス解除（クレジットカード / PayPay / noteシリアルコード対応）
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="closePaywallModal()">✕ 閉じる</button>
+      </div>
+
+      <!-- Serial Code / Passcode Box -->
+      <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 10px; padding: 0.9rem; margin-bottom: 1rem;">
+        <div style="font-size: 0.83rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.35rem;">
+          🔑 note有料記事・BOOTH・メールでシリアルコード（パスコード）を購入済みの方
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <input type="text" id="licenseCodeInput" placeholder="例: MINUKI-980-PASS" style="flex: 1; min-width: 180px; padding: 0.55rem 0.75rem; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); font-weight: 700;" />
+          <button class="btn btn-primary btn-sm" onclick="redeemLicenseCode()">コード認証して即時アンロック</button>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem;">
+          ※オーナー検証用コード: <code>MINUKI-980-PASS</code> を入力すると本番のコード解除フローをテストできます。
+        </div>
+      </div>
+
+      <p style="font-size: 0.83rem; color: var(--text-muted);">
+        相手に言い逃れさせない<strong>「文単位のAI根拠ハイライト」「角が立たない確認・カマかけ・検収差し戻し文面3選」「公式監査証明書PDF出力」</strong>が即座に解放されます。
+      </p>
+
+      <div class="pricing-grid">
+        <!-- Plan 1: 980 Yen Pass -->
+        <div class="price-card featured">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--gold); margin-bottom: 0.25rem;">★ 一番人気・買い切り（自動課金なし）</div>
+            <div style="font-size: 1rem; font-weight: 800;">7日間・徹底監査パス</div>
+            <div style="font-size: 1.65rem; font-weight: 900; margin: 0.45rem 0;">¥980 <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/ 税込・買い切り</span></div>
+            <ul style="font-size: 0.78rem; color: var(--text-muted); padding-left: 1.1rem; margin-bottom: 1rem;">
+              <li>50回までの全モード深層判定</li>
+              <li>文単位のAI根拠ハイライト全表示</li>
+              <li>確認・カマかけ・差し戻し文面解放</li>
+              <li>監査証明書PDF出力</li>
+            </ul>
+          </div>
+          <button class="btn btn-gold" style="width: 100%;" onclick="completePurchase('pass_980')">
+            💳 ¥980 で今すぐ解放
+          </button>
+        </div>
+
+        <!-- Plan 2: 1480 Yen Pro Monthly -->
+        <div class="price-card">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.25rem;">外注ライター検収・教員・人事向け</div>
+            <div style="font-size: 1rem; font-weight: 800;">Pro 月額プラン</div>
+            <div style="font-size: 1.65rem; font-weight: 900; margin: 0.45rem 0;">¥1,480 <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/ 月</span></div>
+            <ul style="font-size: 0.78rem; color: var(--text-muted); padding-left: 1.1rem; margin-bottom: 1rem;">
+              <li>月間無制限スキャン</li>
+              <li>本人文体との比較監査 無制限</li>
+              <li>Word/PDF内部リビジョン監査</li>
+              <li>監査証明書PDF出力無制限</li>
+            </ul>
+          </div>
+          <button class="btn btn-primary" style="width: 100%;" onclick="completePurchase('pro_1480')">
+            ⚡ Proプランを開始
+          </button>
+        </div>
+
+        <!-- Plan 3: 3980 Yen Business Pack -->
+        <div class="price-card">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #a78bfa; margin-bottom: 0.25rem;">Webメディア編集・採用・教育機関</div>
+            <div style="font-size: 1rem; font-weight: 800;">法人・チーム監査パック</div>
+            <div style="font-size: 1.65rem; font-weight: 900; margin: 0.45rem 0;">¥3,980 <span style="font-size: 0.75rem; font-weight: normal; color: var(--text-muted);">/ 月</span></div>
+            <ul style="font-size: 0.78rem; color: var(--text-muted); padding-left: 1.1rem; margin-bottom: 1rem;">
+              <li>チーム5名までシリアル共有可</li>
+              <li>Word/PDF/撮影レポート無制限</li>
+              <li>優先マルチモーダル深層推論</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline" style="width: 100%;" onclick="completePurchase('biz_3980')">
+            🏢 法人パックを導入
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings & Payment Gateway URL Modal -->
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 560px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+        <div style="font-size: 1.05rem; font-weight: 800;">⚙️ 決済リンク＆AIエンジン設定（オーナー管理画面）</div>
+        <button class="btn btn-outline btn-sm" onclick="closeSettingsModal()">✕</button>
+      </div>
+
+      <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem; color: var(--gold);">
+        💳 Stripe Payment Link または note有料記事・PayPay決済URL（設定すると購入ボタンから直接遷移します）
+      </label>
+      <input type="url" id="checkoutUrlInput" placeholder="https://buy.stripe.com/... または https://note.com/..." style="width: 100%; padding: 0.6rem; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); margin-bottom: 0.9rem;" />
+
+      <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 0.3rem;">
+        🤖 Gemini 2.5 Flash API Key（任意・設定すると深層コメント＆画像OCRが追加）
+      </label>
+      <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy...（未設定でも日本特化エンジンが原価0円で動作します）" style="width: 100%; padding: 0.6rem; border-radius: 8px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-main); margin-bottom: 1rem;" />
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <button class="btn btn-outline btn-sm" onclick="toggleProStateManual()">🔄 無料/Pro表示モード切替（検証用）</button>
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">設定を保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legal Modal (特定商取引法に基づく表記 / プライバシーポリシー / 利用規約) -->
+  <div id="legalModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+        <div id="legalModalTitle" style="font-size: 1.1rem; font-weight: 800;">特定商取引法に基づく表記</div>
+        <button class="btn btn-outline btn-sm" onclick="closeLegalModal()">✕ 閉じる</button>
+      </div>
+      <div id="legalModalBody" style="font-size: 0.83rem; color: var(--text-main); line-height: 1.75;"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

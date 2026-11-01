@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://studyhelperproject.github.io/ai-minukikun/sitemap.xml
