@@ -178,9 +178,14 @@ def generate_lp_pages() -> None:
       <div style="text-align: center; padding: 1.5rem; background: var(--bg-input); border-radius: 12px; border: 1px solid var(--primary);">
         <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem;">👇 1日3回まで完全無料・会員登録不要で今すぐチェック</div>
         <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">入力された文章や画像は外部サーバーに一切保存されず、お使いの端末内のみで安全に解析されます。</p>
-        <a href="index.html" class="btn btn-gold" style="font-size: 1.05rem; padding: 0.85rem 2rem;">
-          🔍 AI見抜きくん Pro 無料診断ツールを開く
-        </a>
+        <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+          <a href="index.html" class="btn btn-primary" style="font-size: 1rem; padding: 0.8rem 1.6rem;">
+            🔍 無料診断ツールを開く
+          </a>
+          <a href="https://note.com/safe_swift4998/n/na1af72c84723" target="_blank" rel="noopener noreferrer" class="btn btn-gold" style="font-size: 1rem; padding: 0.8rem 1.6rem;">
+            🎫 7日間・徹底監査パス（公式note ¥980）を取得 ↗
+          </a>
+        </div>
       </div>
 
       <hr style="border: none; border-top: 1px solid var(--border-color); margin: 2rem 0;" />
