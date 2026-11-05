@@ -15,7 +15,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Ping IndexNow Search Engines
+      - name: Update SEO Pages and Sitemap
         run: |
-          curl -s -o /dev/null -w "Bing IndexNow HTTP: %{http_code}\n" "https://www.bing.com/indexnow?url=https://studyhelperproject.github.io/ai-minukikun/&key=426d5b75c2bb457ca034a31745a2300b" || true
-          curl -s -o /dev/null -w "IndexNow Main LP: %{http_code}\n" "https://api.indexnow.org/indexnow?url=https://studyhelperproject.github.io/ai-minukikun/lp-matching.html&key=426d5b75c2bb457ca034a31745a2300b" || true
+          python3 auto_seo_publisher.py
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet || (git add static/ docs/ && git commit -m "Automated daily SEO sitemap & content refresh" && git push)
+
+      - name: Ping IndexNow Search Engines for all 11 URLs
+        run: |
+          for page in "" "lp-matching.html" "lp-crowdworks.html" "lp-report.html" "lp-mercari.html" "topic-apology-mail.html" "topic-pairs-line.html" "topic-lancers-seo.html" "topic-gakuchika-es.html" "topic-univ-report.html" "topic-mercari-fake.html"; do
+            curl -s -o /dev/null -w "IndexNow ${page}: %{http_code}\n" "https://api.indexnow.org/indexnow?url=https://studyhelperproject.github.io/ai-minukikun/${page}&key=426d5b75c2bb457ca034a31745a2300b" || true
+          done
