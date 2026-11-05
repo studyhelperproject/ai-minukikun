@@ -908,9 +908,9 @@ async function redeemLicenseCode() {
 // 決済ゲートウェイURL（Stripe Payment Link / note有料記事URL / BOOTH商品URL）
 // set_payment_url.py スクリプトまたはオーナー設定から本番URLが設定されます
 const DEFAULT_PAYMENT_URLS = {
-  pass_980: "",
-  pro_1480: "",
-  biz_3980: "",
+  pass_980: "https://note.com/safe_swift4998/n/na1af72c84723",
+  pro_1480: "https://note.com/safe_swift4998/n/na1af72c84723",
+  biz_3980: "https://note.com/safe_swift4998/n/na1af72c84723",
 };
 
 function completePurchase(planId) {
