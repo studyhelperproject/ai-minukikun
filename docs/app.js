@@ -122,6 +122,15 @@ document.addEventListener("DOMContentLoaded", () => {
   initLocalLedgerIfEmpty();
   refreshDashboard();
 
+  const initTab = params.get("tab");
+  if (initTab && ["messenger", "stylometry", "photo_report", "document"].includes(initTab)) {
+    switchTab(initTab);
+  }
+  const initSample = params.get("sample");
+  if (initSample && (SAMPLES[initSample] || initSample === "stylometry_case")) {
+    setTimeout(() => loadSample(initSample), 120);
+  }
+
   const txtArea = document.getElementById("messengerText");
   if (txtArea) {
     txtArea.addEventListener("input", () => {
@@ -840,6 +849,9 @@ function renderPremiumSection(data) {
   if (isProUnlocked) {
     container.innerHTML = sentenceHtml + templatesHtml;
   } else {
+    const hiddenSentencesCount = Math.max(sentences.length - 1, 1);
+    const highRiskCount = sentences.filter((s) => s.ai_probability >= 65).length || 1;
+    const scoreVal = Number(data.ai_probability) || 85;
     container.innerHTML = `
       ${sentenceHtml}
       <div class="paywall-wrapper">
@@ -851,18 +863,23 @@ function renderPremiumSection(data) {
           ${templatesHtml}
         </div>
         <div class="paywall-overlay">
-          <div style="font-size: 0.76rem; font-weight: 800; color: var(--gold); letter-spacing: 0.04em; margin-bottom: 0.3rem;">
-            🔒 PRO AUDIT EVIDENCE LOCKED
+          <div style="font-size: 0.76rem; font-weight: 800; color: #f87171; background: rgba(239,68,68,0.16); padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid rgba(239,68,68,0.4); margin-bottom: 0.45rem;">
+            ⚠️ この入力データから「要注意AIシグナル ${highRiskCount}箇所（残り${hiddenSentencesCount}文）」が検出されました
           </div>
-          <div style="font-size: 1.02rem; font-weight: 800; margin-bottom: 0.4rem;">
-            残りすべての文単位ハイライト＆「相手が言い逃れできない確認・差し戻し文面3選」を解放
+          <div style="font-size: 1.04rem; font-weight: 800; margin-bottom: 0.4rem;">
+            AI疑惑スコア ${scoreVal}% の決定的証拠＆「相手が言い逃れできない確認・差し戻し文面3選」を今すぐ解放
           </div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 470px; margin-bottom: 0.9rem;">
-            買い切り <strong>¥980（7日間・徹底監査パス）</strong> またはシリアルコード認証で、全証拠データ・返信テンプレート・公式監査証明書PDF出力が今すぐアンロックされます。
+          <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 490px; margin-bottom: 0.85rem;">
+            公式noteで <strong>¥980（7日間・徹底監査パス / 自動課金なし）</strong> を購入してシリアルコードを入力すると、隠された全${hiddenSentencesCount}文のAI根拠ハイライト・コピペ即利用可能な追及テンプレート・公式監査証明書PDF保存が<strong>10秒でアンロック</strong>されます。
           </p>
-          <button class="btn btn-gold" onclick="openPaywallModal('診断結果内ロック解除')">
-            🔓 ¥980 で全証拠＆返信テンプレを今すぐ解放（コード認証もこちら）
-          </button>
+          <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
+            <a href="https://note.com/safe_swift4998/n/na1af72c84723" target="_blank" rel="noopener noreferrer" class="btn btn-gold" onclick="openPaywallModal('診断結果からnote直行')">
+              📝 公式noteでシリアルコードを取得（¥980）↗
+            </a>
+            <button class="btn btn-primary" onclick="openPaywallModal('診断結果内ロック解除')">
+              🔑 取得済みコードを入力してアンロック
+            </button>
+          </div>
         </div>
       </div>
     `;

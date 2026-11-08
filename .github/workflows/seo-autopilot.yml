@@ -22,8 +22,17 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git diff --quiet || (git add static/ docs/ && git commit -m "Automated daily SEO sitemap & content refresh" && git push)
 
-      - name: Ping IndexNow Search Engines for all 11 URLs
+      - name: Ping IndexNow Search Engines for all 25 URLs
         run: |
-          for page in "" "lp-matching.html" "lp-crowdworks.html" "lp-report.html" "lp-mercari.html" "topic-apology-mail.html" "topic-pairs-line.html" "topic-lancers-seo.html" "topic-gakuchika-es.html" "topic-univ-report.html" "topic-mercari-fake.html"; do
-            curl -s -o /dev/null -w "IndexNow ${page}: %{http_code}\n" "https://api.indexnow.org/indexnow?url=https://studyhelperproject.github.io/ai-minukikun/${page}&key=426d5b75c2bb457ca034a31745a2300b" || true
-          done
+          python3 -c '
+          import urllib.request
+          import auto_seo_publisher as seo
+          pages = ["", "lp-matching.html", "lp-crowdworks.html", "lp-report.html", "lp-mercari.html"] + [t["slug"] for t in seo.SEO_TOPICS]
+          for p in pages:
+              url = f"https://api.indexnow.org/indexnow?url={seo.BASE_URL}/{p}&key=426d5b75c2bb457ca034a31745a2300b"
+              try:
+                  req = urllib.request.urlopen(url, timeout=10)
+                  print(f"IndexNow {p or \"root\"}: {req.status}")
+              except Exception as e:
+                  print(f"IndexNow {p or \"root\"}: {e}")
+          '

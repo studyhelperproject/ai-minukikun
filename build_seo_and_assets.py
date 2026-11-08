@@ -1,9 +1,14 @@
+import json
 import os
+import shutil
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
 
-STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(ROOT_DIR, "static")
+DOCS_DIR = os.path.join(ROOT_DIR, "docs")
 BASE_URL = "https://studyhelperproject.github.io/ai-minukikun"
+NOTE_URL = "https://note.com/safe_swift4998/n/na1af72c84723"
 
 
 def generate_og_image() -> None:
@@ -125,6 +130,26 @@ def generate_lp_pages() -> None:
         problems_html = "\n".join(
             f"<li style='margin-bottom:0.55rem;'>✅ {p}</li>" for p in lp["problem_points"]
         )
+        cta_tab = lp.get("cta_tab", "messenger")
+        sample_map = {
+            "lp-matching.html": "scam_dm",
+            "lp-crowdworks.html": "stylometry_case",
+            "lp-report.html": "ai_es",
+            "lp-mercari.html": "scam_dm",
+        }
+        sample_key = sample_map.get(lp["filename"], "scam_dm")
+        cta_query = f"?tab={cta_tab}&sample={sample_key}"
+
+        faq_schema = {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "AI見抜きくん Pro",
+            "applicationCategory": "SecurityApplication",
+            "operatingSystem": "All",
+            "offers": {"@type": "Offer", "price": "980", "priceCurrency": "JPY"},
+        }
+        json_ld_str = json.dumps(faq_schema, ensure_ascii=False)
+
         html = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -142,6 +167,7 @@ def generate_lp_pages() -> None:
   <meta name="twitter:image" content="{BASE_URL}/og-image.png" />
   <link rel="canonical" href="{BASE_URL}/{lp["filename"]}" />
   <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">{json_ld_str}</script>
 </head>
 <body>
   <header class="app-header">
@@ -153,7 +179,10 @@ def generate_lp_pages() -> None:
           <div class="brand-sub">日本特化・ゼロトラストAI真贋チェッカー</div>
         </div>
       </a>
-      <a href="index.html" class="btn btn-primary btn-sm">🚀 今すぐ無料でAI判定する（登録不要）</a>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <a href="index.html{cta_query}" class="btn btn-primary btn-sm">🚀 サンプル読込済で今すぐ無料AI判定</a>
+        <a href="{NOTE_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-gold btn-sm">🎫 7日間パス(¥980) ↗</a>
+      </div>
     </div>
   </header>
 
@@ -179,10 +208,10 @@ def generate_lp_pages() -> None:
         <div style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem;">👇 1日3回まで完全無料・会員登録不要で今すぐチェック</div>
         <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">入力された文章や画像は外部サーバーに一切保存されず、お使いの端末内のみで安全に解析されます。</p>
         <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
-          <a href="index.html" class="btn btn-primary" style="font-size: 1rem; padding: 0.8rem 1.6rem;">
-            🔍 無料診断ツールを開く
+          <a href="index.html{cta_query}" class="btn btn-primary" style="font-size: 1rem; padding: 0.8rem 1.6rem;">
+            🔍 無料診断ツールを開く（1クリック検証サンプル付）
           </a>
-          <a href="https://note.com/safe_swift4998/n/na1af72c84723" target="_blank" rel="noopener noreferrer" class="btn btn-gold" style="font-size: 1rem; padding: 0.8rem 1.6rem;">
+          <a href="{NOTE_URL}" target="_blank" rel="noopener noreferrer" class="btn btn-gold" style="font-size: 1rem; padding: 0.8rem 1.6rem;">
             🎫 7日間・徹底監査パス（公式note ¥980）を取得 ↗
           </a>
         </div>
@@ -196,16 +225,22 @@ def generate_lp_pages() -> None:
           <li><a href="lp-crowdworks.html" style="color: #38bdf8;">クラウドワークス・ランサーズ外注記事のChatGPT丸投げ＆Wordリビジョン監査</a></li>
           <li><a href="lp-report.html" style="color: #38bdf8;">大学レポート・就活ES（ガクチカ）のAI代筆チェッカー＆本人文体比較</a></li>
           <li><a href="lp-mercari.html" style="color: #38bdf8;">メルカリ出品画像・SNSアイコンのAI生成ヒートマップ（ELA）真贋解析</a></li>
+          <li><a href="topic-apology-mail.html" style="color: #38bdf8;">ビジネス謝罪メール・始末書のChatGPT代筆判定</a></li>
+          <li><a href="topic-pairs-line.html" style="color: #38bdf8;">ペアーズ・withで「すぐLINE交換」を誘うAI業者見分け方</a></li>
+          <li><a href="topic-lancers-seo.html" style="color: #38bdf8;">外注WebライターのChatGPTコピペ記事検収マニュアル</a></li>
+          <li><a href="topic-gakuchika-es.html" style="color: #38bdf8;">就活ガクチカ・志望動機のAI作成チェック＆面接質問</a></li>
         </ul>
       </div>
     </article>
   </main>
 </body>
 </html>"""
-        out_file = os.path.join(STATIC_DIR, lp["filename"])
-        with open(out_file, "w", encoding="utf-8") as f:
-            f.write(html)
-        print("Generated SEO LP:", out_file)
+        for folder in (STATIC_DIR, DOCS_DIR):
+            if os.path.exists(folder):
+                out_file = os.path.join(folder, lp["filename"])
+                with open(out_file, "w", encoding="utf-8") as f:
+                    f.write(html)
+        print("Generated SEO LP:", lp["filename"])
 
 
 def update_sitemap() -> None:
