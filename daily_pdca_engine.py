@@ -127,6 +127,7 @@ def fetch_note_live_metrics() -> dict:
                 for h in d.get("hashtag_notes", [])
                 if h.get("hashtag", {}).get("name")
             ]
+            creator_notes_count = d.get("user", {}).get("note_count", 1)
             return {
                 "status": d.get("status", "unknown"),
                 "price": d.get("price", 980),
@@ -137,10 +138,11 @@ def fetch_note_live_metrics() -> dict:
                 ),
                 "comment_count": len(d.get("comments", [])),
                 "hashtags": hashtags,
+                "creator_notes_count": creator_notes_count,
                 "remained_char_num": d.get("remained_char_num", 0),
             }
     except Exception as e:
-        return {"error": str(e), "like_count": 0, "is_purchased_within_last_24_hours": False, "hashtags": []}
+        return {"error": str(e), "like_count": 0, "is_purchased_within_last_24_hours": False, "hashtags": [], "creator_notes_count": 1}
 
 
 def fetch_github_live_metrics() -> dict:

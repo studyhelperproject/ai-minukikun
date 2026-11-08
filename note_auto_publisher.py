@@ -1,8 +1,7 @@
 import json
 import os
-import re
+import time
 from datetime import datetime
-from urllib.parse import urlparse
 
 import requests
 from dotenv import load_dotenv
@@ -34,7 +33,7 @@ RECOMMENDED_HASHTAGS = [
 
 
 def build_note_html_for_topic(topic: dict) -> str:
-    """noteのエディタ仕様（p / h2 / ul / hr / a のみ有効、CSSは無視される仕様）に完全準拠した記事HTMLを生成"""
+    """noteのエディタ仕様（p / h2 / ul / ol / hr / a のみ有効）に完全準拠した記事HTMLを生成"""
     cta_query = f"?tab={topic.get('cta_tab', 'messenger')}&sample={topic.get('sample_key', 'scam_dm')}"
     direct_tool_url = f"{APP_URL}{cta_query}"
     lp_url = f"{APP_URL}{topic['slug']}"
@@ -73,7 +72,7 @@ def build_note_html_for_topic(topic: dict) -> str:
 
 
 def generate_local_note_packages() -> list:
-    """全SEOトピックのnote投稿用HTML・Markdownパッケージを生成"""
+    """全SEOトピックのnote投稿用HTMLパッケージを生成"""
     os.makedirs(NOTE_EXPORT_DIR, exist_ok=True)
     generated = []
     for idx, t in enumerate(seo.SEO_TOPICS, 1):
@@ -86,22 +85,21 @@ def generate_local_note_packages() -> list:
                 f"<!-- Hashtags: {' '.join(RECOMMENDED_HASHTAGS)} -->\n"
                 f"{html_body}\n"
             )
-        generated.append({"slug": slug_base, "title": t["h1"], "file": out_file, "html": html_body})
+        generated.append({"slug": slug_base, "title": t["h1"], "file": out_file, "html": html_body, "kw": t.get("kw", "")})
     return generated
 
 
 def get_note_cookies_via_api_or_env() -> dict:
-    """
-    1. 環境変数 NOTE_SESSION_COOKIE (_note_session_v5 等) があればそれを使用
-    2. 環境変数 NOTE_EMAIL / NOTE_PASSWORD があれば APIログインを試行
-    """
     cookie_dict = {}
     raw_cookie = os.getenv("NOTE_SESSION_COOKIE", "").strip()
     if raw_cookie:
-        for part in raw_cookie.split(";"):
-            if "=" in part:
-                k, v = part.strip().split("=", 1)
-                cookie_dict[k.strip()] = v.strip()
+        if "=" not in raw_cookie:
+            cookie_dict["_note_session_v5"] = raw_cookie
+        else:
+            for part in raw_cookie.split(";"):
+                if "=" in part:
+                    k, v = part.strip().split("=", 1)
+                    cookie_dict[k.strip()] = v.strip()
         if cookie_dict:
             return cookie_dict
 
@@ -126,15 +124,17 @@ def get_note_cookies_via_api_or_env() -> dict:
         )
         if resp.status_code in (200, 201):
             return session.cookies.get_dict()
-    except Exception as e:
-        print(f"[note auth] direct sign_in exception: {e}")
-
+    except Exception:
+        pass
     return {}
 
 
-def post_or_draft_note_via_unofficial_api(cookies: dict, title: str, html_body: str, publish: bool = False) -> dict:
+def post_and_publish_note_article(cookies: dict, title: str, html_body: str, tags: list = None) -> dict:
     """
-    note非公式API (/api/v1/text_notes, /api/v1/text_notes/draft_save, /api/v2/notes/{key}/publish) を用いて記事を自動作成・保存
+    検証済み3ステップ:
+    1. POST /api/v1/text_notes で新規ノート枠作成
+    2. POST /api/v1/text_notes/draft_save?id={id}&is_temp_saved=true で本文HTML保存
+    3. PUT /api/v1/text_notes/{id} で status=published, free_body, hashtags を設定して本公開
     """
     headers = {
         "Content-Type": "application/json",
@@ -143,65 +143,72 @@ def post_or_draft_note_via_unofficial_api(cookies: dict, title: str, html_body: 
         "Referer": "https://note.com/notes/new",
         "X-Requested-With": "XMLHttpRequest",
     }
-    if "XSRF-TOKEN" in cookies:
-        headers["X-XSRF-TOKEN"] = cookies["XSRF-TOKEN"]
 
-    create_payload = {
-        "body": html_body,
-        "name": title,
-        "template_key": None,
-    }
-    resp = requests.post(
+    # Step 1: Create note shell
+    r_create = requests.post(
         "https://note.com/api/v1/text_notes",
         cookies=cookies,
         headers=headers,
-        json=create_payload,
+        json={"name": title, "body": html_body, "template_key": None},
         timeout=15,
     )
-    if resp.status_code not in (200, 201):
-        return {"ok": False, "status": resp.status_code, "error": resp.text[:300]}
+    if r_create.status_code not in (200, 201):
+        return {"ok": False, "step": "create", "status": r_create.status_code, "error": r_create.text[:250]}
 
-    res_data = resp.json().get("data", {})
-    article_id = res_data.get("id")
-    article_key = res_data.get("key")
+    c_data = r_create.json().get("data", {})
+    article_id = c_data.get("id")
+    article_key = c_data.get("key")
+    if not article_id:
+        return {"ok": False, "step": "create_no_id", "error": r_create.text[:250]}
 
-    # 下書き更新 & ハッシュタグ付与
-    update_payload = {
-        "body": html_body,
-        "name": title,
-        "status": "published" if publish else "draft",
-        "hashtags": RECOMMENDED_HASHTAGS,
-    }
-    upd_resp = requests.put(
+    headers["Referer"] = f"https://note.com/notes/{article_id}/edit"
+
+    # Step 2: Save draft body
+    r_draft = requests.post(
+        f"https://note.com/api/v1/text_notes/draft_save?id={article_id}&is_temp_saved=true",
+        cookies=cookies,
+        headers=headers,
+        json={
+            "body": html_body,
+            "name": title,
+            "body_length": len(html_body),
+            "index": False,
+            "is_lead_form": False,
+        },
+        timeout=15,
+    )
+
+    # Step 3: Publish via PUT
+    use_tags = tags if tags else RECOMMENDED_HASHTAGS
+    r_pub = requests.put(
         f"https://note.com/api/v1/text_notes/{article_id}",
         cookies=cookies,
         headers=headers,
-        json=update_payload,
+        json={
+            "body": html_body,
+            "free_body": html_body,
+            "name": title,
+            "status": "published",
+            "hashtags": use_tags,
+            "price": 0,
+            "send_notifications_flag": True,
+        },
         timeout=15,
     )
 
     return {
-        "ok": upd_resp.status_code in (200, 201),
+        "ok": r_pub.status_code in (200, 201),
         "id": article_id,
         "key": article_key,
         "url": f"https://note.com/safe_swift4998/n/{article_key}",
-        "status": "published" if publish else "draft",
+        "status_code": r_pub.status_code,
     }
 
 
-def run_note_auto_syndication() -> dict:
+def run_note_auto_syndication(max_posts_per_run: int = 1) -> dict:
     packages = generate_local_note_packages()
     cookies = get_note_cookies_via_api_or_env()
 
-    if not cookies:
-        return {
-            "mode": "local_html_ready",
-            "packages_count": len(packages),
-            "api_authenticated": False,
-            "message": f"note投稿用HTMLパッケージ 全{len(packages)}本を note_articles_ready/ に自動生成完了（NOTE_EMAIL/NOTE_PASSWORD または NOTE_SESSION_COOKIE 設定時に非公式API自動投稿が即時発火します）",
-        }
-
-    # 認証情報がある場合は未投稿のトピックを1日1本ずつ自動でnoteへ投稿
     published_log = {}
     if os.path.exists(NOTE_PUBLISHED_LOG):
         try:
@@ -210,35 +217,53 @@ def run_note_auto_syndication() -> dict:
         except Exception:
             published_log = {}
 
+    if not cookies:
+        return {
+            "mode": "local_html_ready",
+            "packages_count": len(packages),
+            "published_total": len(published_log),
+            "api_authenticated": False,
+            "message": f"note投稿済み {len(published_log)}本 / 全{len(packages)}パッケージ待機中",
+        }
+
     results = []
+    posted_count = 0
     for pkg in packages:
         if pkg["slug"] in published_log:
             continue
-        res = post_or_draft_note_via_unofficial_api(
+        res = post_and_publish_note_article(
             cookies=cookies,
             title=pkg["title"],
             html_body=pkg["html"],
-            publish=True,
         )
         results.append(res)
         if res.get("ok"):
             published_log[pkg["slug"]] = {
-                "published_at": datetime.now().isoformat(),
+                "published_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "id": res.get("id"),
                 "key": res.get("key"),
+                "title": pkg["title"],
                 "url": res.get("url"),
             }
             with open(NOTE_PUBLISHED_LOG, "w", encoding="utf-8") as f:
                 json.dump(published_log, f, ensure_ascii=False, indent=2)
-        break  # レート制限・スパム判定回避のため1回の実行につき1記事ずつ安全に自動投稿
+            posted_count += 1
+            if posted_count >= max_posts_per_run:
+                break
+            time.sleep(3)
+        else:
+            break
 
     return {
         "mode": "unofficial_api_live",
         "packages_count": len(packages),
+        "published_total": len(published_log),
         "api_authenticated": True,
         "results": results,
+        "message": f"note非公式API自動投稿稼働中（累計公開済: {len(published_log)}本 / 今回新規公開: {posted_count}本）",
     }
 
 
 if __name__ == "__main__":
-    out = run_note_auto_syndication()
+    out = run_note_auto_syndication(max_posts_per_run=3)
     print(json.dumps(out, ensure_ascii=False, indent=2))
