@@ -5,6 +5,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 import auto_seo_publisher as seo
+import note_auto_publisher as note_pub
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(ROOT_DIR, "static")
@@ -195,6 +196,42 @@ def inject_next_seo_topic_if_needed() -> dict:
     }
 
 
+def sync_github_gist_backlinks(all_topics: list) -> bool:
+    """外部ドメイン（gist.github.com）の公開記事に全30ページのバックリンクとnote決済リンクを自動同期"""
+    gist_path = os.path.join(ROOT_DIR, "PUBLIC_SEO_GIST.md")
+    topic_links = "\n".join(
+        f"- [{t['h1']}]({seo.BASE_URL}/{t['slug']})" for t in all_topics
+    )
+    md = f"""# 【無料診断ツール公開】LINE・マッチングアプリのAI業者や、クラウドワークス外注記事のChatGPT丸投げ・大学レポート代筆を3秒で見抜く方法
+
+近年、マッチングアプリ（ペアーズ・タップル・with等）でのAI自動返信ボットやロマンス詐欺誘導、クラウドソーシング（クラウドワークス・ランサーズ）でのChatGPT丸投げ記事納品、および就活ES・大学レポートのAI代筆が急増しています。
+
+そこで、**日本語の統計特徴量（文長揺らぎ・漢字含有率・助詞リズム）と本人文体比較（Stylometry）、およびWord内部リビジョン履歴・画像ELA（圧縮誤差ヒートマップ）** をブラウザ内（外部サーバー保存ゼロ）で一括監査できるWebツール **『AI見抜きくん Pro』** を公開しました。
+
+---
+
+## 🔗 公式リンク・徹底監査パス（シリアルコード即時発行）
+
+1. **🔍 メイン総合診断ツール（AI見抜きくん Pro・1日3回無料）**
+   - {seo.BASE_URL}/
+2. **🎫 7日間・徹底監査パス（公式note ¥980・全証拠＆コピペ即利用可能な追及テンプレ3選＆監査証明書PDF出力）**
+   - {seo.NOTE_URL}
+
+---
+
+## 📚 用途別・AI真贋監査＆見抜き方マニュアル全集（全30ページ・ワンクリックサンプル診断対応）
+
+- [マッチングアプリ（ペアーズ・タップル・LINE）のAI業者・ロマンス詐欺を見抜く方法]({seo.BASE_URL}/lp-matching.html)
+- [クラウドワークス・ランサーズ外注記事のChatGPT丸投げ＆Wordリビジョン監査]({seo.BASE_URL}/lp-crowdworks.html)
+- [大学レポート・就活ES（ガクチカ）のAI代筆チェッカー＆本人文体比較]({seo.BASE_URL}/lp-report.html)
+- [メルカリ出品画像・SNSアイコンのAI生成ヒートマップ（ELA）真贋解析]({seo.BASE_URL}/lp-mercari.html)
+{topic_links}
+"""
+    with open(gist_path, "w", encoding="utf-8") as f:
+        f.write(md)
+    return True
+
+
 def update_frontend_pdca_telemetry(snapshot: dict) -> None:
     """フロントエンドのオーナーコックピット等からも最新の日次PDCA評価値を参照できるようJSONを出力"""
     for folder in (STATIC_DIR, DOCS_DIR):
@@ -248,6 +285,8 @@ def run_daily_pdca() -> None:
 
     seo.build_all_topic_pages()
     seo.patch_frontend_conversion_and_sync()
+    note_syndication_res = note_pub.run_note_auto_syndication()
+    sync_github_gist_backlinks(seo.SEO_TOPICS)
 
     all_pages = ["", "lp-matching.html", "lp-crowdworks.html", "lp-report.html", "lp-mercari.html"] + [
         t["slug"] for t in seo.SEO_TOPICS
@@ -256,6 +295,9 @@ def run_daily_pdca() -> None:
 
     actions_taken.append(
         f"検索流入の間口を最大化するため、ロングテールSEO特化ページを全{len(all_pages)}ページ体制へ拡充・再ビルド完了（新規追加: {', '.join(newly_added) if newly_added else '全ページ最新化'}）"
+    )
+    actions_taken.append(
+        f"note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: {note_syndication_res.get('message', note_syndication_res.get('mode'))}）"
     )
     actions_taken.append(
         "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用"

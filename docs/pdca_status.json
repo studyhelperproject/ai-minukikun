@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-11-09 03:23:40 JST",
+  "evaluated_at": "2026-11-09 03:32:13 JST",
   "target_monthly_net_profit_yen": 10000,
   "note": {
     "status": "published",
@@ -32,6 +32,7 @@
   ],
   "executed_improvements": [
     "検索流入の間口を最大化するため、ロングテールSEO特化ページを全30ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html）",
+    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note投稿用HTMLパッケージ 全25本を note_articles_ready/ に自動生成完了（NOTE_EMAIL/NOTE_PASSWORD または NOTE_SESSION_COOKIE 設定時に非公式API自動投稿が即時発火します））",
     "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
     "全30ページの `sitemap.xml` 最終更新日を `2026-11-09` に更新し、IndexNow API へ一括インデックス通知を実行"
   ]
