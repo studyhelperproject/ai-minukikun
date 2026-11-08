@@ -616,6 +616,38 @@ def patch_frontend_conversion_and_sync() -> None:
         </div>"""
             js = js.replace(old_overlay, new_overlay, 1)
 
+        # 3. Live PDCA Telemetry loader in refreshDashboard
+        if "loadLivePdcaStatus" not in js:
+            js += """
+
+async function loadLivePdcaStatus() {
+  const el = document.getElementById("livePdcaAuditContent");
+  if (!el) return;
+  try {
+    const resp = await fetch("pdca_status.json?t=" + Date.now());
+    if (!resp.ok) return;
+    const d = await resp.json();
+    const nLikes = d.note ? d.note.like_count : 0;
+    const nPaid24 = d.note && d.note.is_purchased_within_last_24_hours ? "✅ 直近24h決済検知あり" : "⏳ 直近24h決済未検知（SEO・CVR強化継続中）";
+    const pagesCnt = d.seo_pages_deployed || 30;
+    const actions = (d.executed_improvements || []).map((a) => `<li>${escapeHtml(a)}</li>`).join("");
+    el.innerHTML = `
+      <div style="display:flex; gap:1.2rem; flex-wrap:wrap; margin-bottom:0.4rem;">
+        <span>🕒 最終評価日時: <strong>${escapeHtml(d.evaluated_at)}</strong></span>
+        <span>📄 稼働SEOページ数: <strong>${escapeHtml(pagesCnt)}ページ</strong></span>
+        <span>❤️ note実測スキ数: <strong>${escapeHtml(nLikes)}件</strong></span>
+        <span>💳 24h決済フラグ: <strong>${nPaid24}</strong></span>
+      </div>
+      <div style="font-size:0.78rem; color:var(--text-muted);">
+        <strong>直近の自律改善実装:</strong>
+        <ul style="padding-left:1.2rem; margin-top:0.2rem;">${actions}</ul>
+      </div>
+    `;
+  } catch (e) {}
+}
+document.addEventListener("DOMContentLoaded", loadLivePdcaStatus);
+"""
+
         with open(app_js_path, "w", encoding="utf-8") as f:
             f.write(js)
 

@@ -1,4 +1,4 @@
-name: Cloud SEO & Sitemap Autopilot
+name: Cloud SEO & Daily PDCA Autopilot
 
 on:
   schedule:
@@ -9,25 +9,29 @@ permissions:
   contents: write
 
 jobs:
-  seo-ping:
+  daily-pdca:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Update SEO Pages and Sitemap
+      - name: Run Autonomous Daily PDCA Evaluation & SEO Expansion
         run: |
-          python3 auto_seo_publisher.py
+          python3 daily_pdca_engine.py
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git diff --quiet || (git add static/ docs/ && git commit -m "Automated daily SEO sitemap & content refresh" && git push)
+          git diff --quiet || (git add -A && git commit -m "Automated daily PDCA evaluation, metrics audit & SEO content expansion" && git push)
 
-      - name: Ping IndexNow Search Engines for all 25 URLs
+      - name: Ping IndexNow Search Engines for all deployed URLs
         run: |
           python3 -c '
-          import urllib.request
+          import json, urllib.request
           import auto_seo_publisher as seo
-          pages = ["", "lp-matching.html", "lp-crowdworks.html", "lp-report.html", "lp-mercari.html"] + [t["slug"] for t in seo.SEO_TOPICS]
+          with open("pdca_metrics_history.json", "r", encoding="utf-8") as f:
+              hist = json.load(f)
+          import os
+          pages = [fn for fn in os.listdir("docs") if fn.endswith(".html") and fn != "index.html"]
+          pages = [""] + sorted(pages)
           for p in pages:
               url = f"https://api.indexnow.org/indexnow?url={seo.BASE_URL}/{p}&key=426d5b75c2bb457ca034a31745a2300b"
               try:

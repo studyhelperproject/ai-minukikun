@@ -1,0 +1,38 @@
+{
+  "evaluated_at": "2026-11-09 03:23:40 JST",
+  "target_monthly_net_profit_yen": 10000,
+  "note": {
+    "status": "published",
+    "price": 980,
+    "like_count": 2,
+    "anonymous_like_count": 0,
+    "is_purchased_within_last_24_hours": false,
+    "comment_count": 0,
+    "hashtags": [
+      "#コピペ",
+      "#見抜"
+    ],
+    "remained_char_num": 206
+  },
+  "note_like_delta": 0,
+  "github": {
+    "stars": 0,
+    "watchers": 0,
+    "forks": 0,
+    "open_issues": 0
+  },
+  "seo_pages_deployed": 30,
+  "cdn_health": {
+    "checked": 10,
+    "ok_200": 10
+  },
+  "identified_bottlenecks": [
+    "直近24時間のnote新規決済フラグが `false`（検索流入からLP経由でのサンプル体験→ペイウォール到達数の絶対量不足）",
+    "note記事のハッシュタグが現在 2個（#コピペ, #見抜）のみで、note内検索からの流入機会を取りこぼしている"
+  ],
+  "executed_improvements": [
+    "検索流入の間口を最大化するため、ロングテールSEO特化ページを全30ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html）",
+    "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
+    "全30ページの `sitemap.xml` 最終更新日を `2026-11-09` に更新し、IndexNow API へ一括インデックス通知を実行"
+  ]
+}
