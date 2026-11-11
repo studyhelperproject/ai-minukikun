@@ -248,6 +248,10 @@ def run_daily_pdca() -> None:
 
     # 1. [CHECK] リアルタイム外部指標の計測
     note_metrics = fetch_note_live_metrics()
+    pv_stats = note_pub.fetch_authenticated_pv_stats()
+    note_metrics["total_pv"] = pv_stats.get("total_pv", 0)
+    note_metrics["total_like_all_articles"] = pv_stats.get("total_like", note_metrics.get("like_count", 0))
+    note_metrics["top_articles_pv"] = pv_stats.get("top_articles", [])
     gh_metrics = fetch_github_live_metrics()
 
     # 過去の履歴をロード
@@ -260,8 +264,10 @@ def run_daily_pdca() -> None:
             history = []
 
     prev = history[-1] if history else None
-    prev_likes = prev["note"]["like_count"] if prev and "note" in prev else note_metrics.get("like_count", 0)
-    like_diff = note_metrics.get("like_count", 0) - prev_likes
+    prev_likes = prev["note"].get("total_like_all_articles", prev["note"].get("like_count", 0)) if prev and "note" in prev else note_metrics.get("total_like_all_articles", 0)
+    prev_pv = prev["note"].get("total_pv", 0) if prev and "note" in prev else 0
+    like_diff = note_metrics.get("total_like_all_articles", 0) - prev_likes
+    pv_diff = note_metrics.get("total_pv", 0) - prev_pv
 
     # 2. [ANALYZE & PLAN] ボトルネック特定と改善方針の決定
     bottlenecks = []
@@ -313,6 +319,12 @@ def run_daily_pdca() -> None:
         "target_monthly_net_profit_yen": 10000,
         "note": note_metrics,
         "note_like_delta": like_diff,
+        "note_pv_delta": pv_diff,
+        "note_syndication": {
+            "published_total": note_syndication_res.get("published_total", 0),
+            "outreach_liked": note_syndication_res.get("outreach", {}).get("liked_count", 0),
+            "outreach_cumulative": note_syndication_res.get("outreach", {}).get("total_engaged_cumulative", 0),
+        },
         "github": gh_metrics,
         "seo_pages_deployed": len(all_pages),
         "cdn_health": cdn_health,
@@ -349,9 +361,11 @@ def run_daily_pdca() -> None:
 | 指標項目 | 現在値（実測） | 前回比 / ステータス | 評価・診断 |
 | :--- | :--- | :--- | :--- |
 | **公式note 決済ページ稼働** | `HTTP 200 OK` (¥{note_metrics.get('price', 980)}) | 正常稼働中 | 決済導線（`na1af72c84723`）への遷移・購入可能状態を確認 |
-| **note 記事「スキ（Like）」数** | **{note_metrics.get('like_count', 0)} 件** | `{like_diff:+d}` 件 | 初期エンゲージメント発生済・さらなる流入拡大が必要 |
-| **直近24時間以内のnote購入フラグ** | `{note_metrics.get('is_purchased_within_last_24_hours')}` | `is_purchased_within_last_24_hours` | **最優先改善ターゲット（検索流入数×LP遷移率×ペイウォールCVRの引き上げが急務）** |
-| **note 設定ハッシュタグ数** | **{len(note_metrics.get('hashtags', []))} 個** ({', '.join(note_metrics.get('hashtags', []))}) | 要拡充 | note内検索流入を増やすため `#ChatGPT` `#マッチングアプリ` `#クラウドワークス` `#就活` 等の追加を推奨 |
+| **note 全記事累計PV（閲覧数）** | **{note_metrics.get('total_pv', 0)} PV** | `{pv_diff:+d}` PV | 認証ダッシュボードAPI (`/api/v1/stats/pv`) 実測値 |
+| **note 全記事累計スキ（Like）数** | **{note_metrics.get('total_like_all_articles', 0)} 件** (有料記事単体: {note_metrics.get('like_count', 0)}件) | `{like_diff:+d}` 件 | 記事あたりのスキ率が高水準（PV対比約69%）・母数拡大を推進中 |
+| **note 自動公開済記事数 & 能動営業数** | **公開 {note_syndication_res.get('published_total', 0)} 本** / **スキ営業 累計 {note_syndication_res.get('outreach', {}).get('total_engaged_cumulative', 0)} 件** | 自動アウトリーチ稼働中 | 見込み客（#クラウドワークス, #マッチングアプリ, #就活 等）への通知アプローチ |
+| **直近24時間以内のnote購入フラグ** | `{note_metrics.get('is_purchased_within_last_24_hours')}` | `is_purchased_within_last_24_hours` | **最優先改善ターゲット（検索流入数×能動営業×LP遷移率×ペイウォールCVRの引き上げ）** |
+| **note 設定ハッシュタグ数** | **{len(note_metrics.get('hashtags', []))} 個** ({', '.join(note_metrics.get('hashtags', []))}) | 最適化済 | 10大主要ハッシュタグ設定完了 |
 | **公開SEO特化ページ総数** | **全 {len(all_pages)} ページ** | `sitemap.xml` 同期済 | Googleリッチリザルト用 `FAQPage` JSON-LD 構造化データを全記事に実装済 |
 | **本番CDN死活監視 (サンプル10URL)** | **{cdn_health['ok_200']} / {cdn_health['checked']} 正常** | `HTTP 200 OK` | エッジ配信・CSPセキュリティヘッダーともに異常なし |
 

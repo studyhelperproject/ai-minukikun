@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import urllib.parse
 from datetime import datetime
 
 import requests
@@ -13,6 +14,7 @@ load_dotenv()
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 NOTE_EXPORT_DIR = os.path.join(ROOT_DIR, "note_articles_ready")
 NOTE_PUBLISHED_LOG = os.path.join(ROOT_DIR, "note_published_log.json")
+NOTE_ENGAGED_LOG = os.path.join(ROOT_DIR, "note_engaged_log.json")
 MAIN_PAID_NOTE_KEY = "na1af72c84723"
 MAIN_PAID_NOTE_ID = 189417279
 MAIN_PAID_NOTE_URL = "https://note.com/safe_swift4998/n/na1af72c84723"
@@ -29,6 +31,18 @@ RECOMMENDED_HASHTAGS = [
     "#ペアーズ",
     "#副業",
     "#AI見抜きくん",
+]
+
+# 能動的エンゲージメント（スキ回り）対象キーワード群
+OUTREACH_SEARCH_QUERIES = [
+    "#クラウドワークス",
+    "#Webライター",
+    "#マッチングアプリ",
+    "#ペアーズ",
+    "#ガクチカ",
+    "#就活",
+    "#ChatGPT",
+    "#SEO記事",
 ]
 
 
@@ -129,13 +143,51 @@ def get_note_cookies_via_api_or_env() -> dict:
     return {}
 
 
+def fetch_authenticated_pv_stats() -> dict:
+    """認証済みセッションを用いてnote全体のリアルなPV数・スキ数・記事別閲覧数を取得"""
+    cookies = get_note_cookies_via_api_or_env()
+    if not cookies:
+        return {"authenticated": False, "total_pv": 0, "total_like": 0, "top_articles": []}
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "X-Requested-With": "XMLHttpRequest",
+        "Origin": "https://note.com",
+        "Referer": "https://note.com/sitesettings/stats",
+    }
+    try:
+        r = requests.get(
+            "https://note.com/api/v1/stats/pv?filter=all&page=1&sort=pv",
+            cookies=cookies,
+            headers=headers,
+            timeout=12,
+        )
+        if r.status_code == 200:
+            d = r.json().get("data", {})
+            top_list = []
+            for ns in d.get("note_stats", [])[:10]:
+                top_list.append(
+                    {
+                        "key": ns.get("key"),
+                        "name": ns.get("name", "")[:42],
+                        "read_count": ns.get("read_count", 0),
+                        "like_count": ns.get("like_count", 0),
+                    }
+                )
+            return {
+                "authenticated": True,
+                "total_pv": d.get("total_pv", 0),
+                "total_like": d.get("total_like", 0),
+                "total_comment": d.get("total_comment", 0),
+                "last_calculate_at": d.get("last_calculate_at", ""),
+                "top_articles": top_list,
+            }
+    except Exception as e:
+        return {"authenticated": False, "error": str(e), "total_pv": 0, "total_like": 0, "top_articles": []}
+    return {"authenticated": False, "total_pv": 0, "total_like": 0, "top_articles": []}
+
+
 def post_and_publish_note_article(cookies: dict, title: str, html_body: str, tags: list = None) -> dict:
-    """
-    検証済み3ステップ:
-    1. POST /api/v1/text_notes で新規ノート枠作成
-    2. POST /api/v1/text_notes/draft_save?id={id}&is_temp_saved=true で本文HTML保存
-    3. PUT /api/v1/text_notes/{id} で status=published, free_body, hashtags を設定して本公開
-    """
     headers = {
         "Content-Type": "application/json",
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
@@ -144,7 +196,6 @@ def post_and_publish_note_article(cookies: dict, title: str, html_body: str, tag
         "X-Requested-With": "XMLHttpRequest",
     }
 
-    # Step 1: Create note shell
     r_create = requests.post(
         "https://note.com/api/v1/text_notes",
         cookies=cookies,
@@ -163,8 +214,7 @@ def post_and_publish_note_article(cookies: dict, title: str, html_body: str, tag
 
     headers["Referer"] = f"https://note.com/notes/{article_id}/edit"
 
-    # Step 2: Save draft body
-    r_draft = requests.post(
+    requests.post(
         f"https://note.com/api/v1/text_notes/draft_save?id={article_id}&is_temp_saved=true",
         cookies=cookies,
         headers=headers,
@@ -178,7 +228,6 @@ def post_and_publish_note_article(cookies: dict, title: str, html_body: str, tag
         timeout=15,
     )
 
-    # Step 3: Publish via PUT
     use_tags = tags if tags else RECOMMENDED_HASHTAGS
     r_pub = requests.put(
         f"https://note.com/api/v1/text_notes/{article_id}",
@@ -205,7 +254,77 @@ def post_and_publish_note_article(cookies: dict, title: str, html_body: str, tag
     }
 
 
-def run_note_auto_syndication(max_posts_per_run: int = 1) -> dict:
+def run_proactive_target_engagement(cookies: dict, max_likes_per_run: int = 8) -> dict:
+    """
+    ターゲット層（#クラウドワークス, #マッチングアプリ, #ガクチカ, #Webライター 等）の最新記事を検索し、
+    自動で「スキ（Like）」を送ることで相手に通知を届け、プロフィール・有料パス記事への折り返し流入を作る
+    """
+    if not cookies:
+        return {"liked_count": 0, "targets": []}
+
+    engaged = {}
+    if os.path.exists(NOTE_ENGAGED_LOG):
+        try:
+            with open(NOTE_ENGAGED_LOG, "r", encoding="utf-8") as f:
+                engaged = json.load(f)
+        except Exception:
+            engaged = {}
+
+    headers = {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Origin": "https://note.com",
+        "Referer": "https://note.com/",
+        "X-Requested-With": "XMLHttpRequest",
+    }
+
+    liked_now = []
+    for tag in OUTREACH_SEARCH_QUERIES:
+        if len(liked_now) >= max_likes_per_run:
+            break
+        q_enc = urllib.parse.quote(tag)
+        search_url = f"https://note.com/api/v3/searches?context=note&q={q_enc}&size=5&start=0&sort=new"
+        try:
+            r = requests.get(search_url, cookies=cookies, headers=headers, timeout=10)
+            if r.status_code != 200:
+                continue
+            notes = r.json().get("data", {}).get("notes", {}).get("contents", [])
+            for n in notes:
+                n_key = n.get("key")
+                u_name = (n.get("user") or {}).get("urlname", "")
+                if not n_key or u_name == "safe_swift4998" or n_key in engaged or n.get("is_liked"):
+                    continue
+                r_like = requests.post(
+                    f"https://note.com/api/v3/notes/{n_key}/likes",
+                    cookies=cookies,
+                    headers=headers,
+                    json={},
+                    timeout=10,
+                )
+                if r_like.status_code in (200, 201):
+                    engaged[n_key] = {
+                        "liked_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "query": tag,
+                        "user": u_name,
+                    }
+                    liked_now.append({"key": n_key, "query": tag, "user": u_name})
+                    time.sleep(1.8)
+                    if len(liked_now) >= max_likes_per_run:
+                        break
+        except Exception:
+            continue
+
+    with open(NOTE_ENGAGED_LOG, "w", encoding="utf-8") as f:
+        json.dump(engaged, f, ensure_ascii=False, indent=2)
+
+    return {
+        "liked_count": len(liked_now),
+        "total_engaged_cumulative": len(engaged),
+        "targets": liked_now,
+    }
+
+
+def run_note_auto_syndication(max_posts_per_run: int = 2, max_likes_per_run: int = 8) -> dict:
     packages = generate_local_note_packages()
     cookies = get_note_cookies_via_api_or_env()
 
@@ -250,20 +369,25 @@ def run_note_auto_syndication(max_posts_per_run: int = 1) -> dict:
             posted_count += 1
             if posted_count >= max_posts_per_run:
                 break
-            time.sleep(3)
+            time.sleep(2.5)
         else:
             break
+
+    # 能動的アウトリーチ（スキ回り）の実行
+    outreach_res = run_proactive_target_engagement(cookies, max_likes_per_run=max_likes_per_run)
 
     return {
         "mode": "unofficial_api_live",
         "packages_count": len(packages),
         "published_total": len(published_log),
+        "newly_published": posted_count,
         "api_authenticated": True,
         "results": results,
-        "message": f"note非公式API自動投稿稼働中（累計公開済: {len(published_log)}本 / 今回新規公開: {posted_count}本）",
+        "outreach": outreach_res,
+        "message": f"note自動投稿稼働中（累計公開済: {len(published_log)}本 / 今回新規公開: {posted_count}本 / ターゲット見込み客への能動スキ営業: {outreach_res.get('liked_count', 0)}件完了・累計{outreach_res.get('total_engaged_cumulative', 0)}件）",
     }
 
 
 if __name__ == "__main__":
-    out = run_note_auto_syndication(max_posts_per_run=3)
+    out = run_note_auto_syndication(max_posts_per_run=2, max_likes_per_run=8)
     print(json.dumps(out, ensure_ascii=False, indent=2))
