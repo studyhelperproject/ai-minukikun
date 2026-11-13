@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-11-12 15:36:28 JST",
+  "evaluated_at": "2026-11-13 14:54:21 JST",
   "target_monthly_net_profit_yen": 10000,
   "note": {
     "status": "published",
@@ -20,22 +20,22 @@
       "#大学レポート",
       "#AI見抜きくん"
     ],
-    "creator_notes_count": 11,
+    "creator_notes_count": 13,
     "remained_char_num": 206,
-    "total_pv": 16,
-    "total_like_all_articles": 15,
+    "total_pv": 18,
+    "total_like_all_articles": 21,
     "top_articles_pv": [
       {
         "key": "na1af72c84723",
         "name": "LINE・マッチングアプリのAI業者や、外注記事のChatGPT丸投げを3秒で見抜く",
-        "read_count": 4,
+        "read_count": 5,
         "like_count": 2
       },
       {
         "key": "nfc9a0752197f",
         "name": "就活エントリーシート（ガクチカ・志望動機）のAI生成チェック＆面接深掘り質問ジェネレ",
         "read_count": 4,
-        "like_count": 2
+        "like_count": 3
       },
       {
         "key": "n17eb8de71055",
@@ -74,6 +74,12 @@
         "like_count": 1
       },
       {
+        "key": "n92bd01c60010",
+        "name": "そのnote記事や副業ブログ、ChatGPTのコピペ量産？AI生成率を3秒で暴く無料",
+        "read_count": 1,
+        "like_count": 3
+      },
+      {
         "key": "n1db935933722",
         "name": "Googleマップの星5口コミや通販レビューは本物？AIサクラ投稿を3秒で真贋判定",
         "read_count": 0,
@@ -82,11 +88,11 @@
     ]
   },
   "note_like_delta": 6,
-  "note_pv_delta": 3,
+  "note_pv_delta": 2,
   "note_syndication": {
-    "published_total": 12,
+    "published_total": 14,
     "outreach_liked": 8,
-    "outreach_cumulative": 16
+    "outreach_cumulative": 24
   },
   "github": {
     "stars": 0,
@@ -104,8 +110,8 @@
   ],
   "executed_improvements": [
     "検索流入の間口を最大化するため、ロングテールSEO特化ページを全30ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html）",
-    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 12本 / 今回新規公開: 2本 / ターゲット見込み客への能動スキ営業: 8件完了・累計16件））",
+    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 14本 / 今回新規公開: 2本 / ターゲット見込み客への能動スキ営業: 8件完了・累計24件））",
     "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
-    "全30ページの `sitemap.xml` 最終更新日を `2026-11-12` に更新し、IndexNow API へ一括インデックス通知を実行"
+    "全30ページの `sitemap.xml` 最終更新日を `2026-11-13` に更新し、IndexNow API へ一括インデックス通知を実行"
   ]
 }
