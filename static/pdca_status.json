@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-11-15 10:24:16 JST",
+  "evaluated_at": "2026-11-15 14:42:36 JST",
   "target_monthly_net_profit_yen": 10000,
   "note": {
     "status": "published",
@@ -20,10 +20,10 @@
       "#大学レポート",
       "#AI見抜きくん"
     ],
-    "creator_notes_count": 17,
+    "creator_notes_count": 19,
     "remained_char_num": 206,
-    "total_pv": 23,
-    "total_like_all_articles": 28,
+    "total_pv": 25,
+    "total_like_all_articles": 33,
     "top_articles_pv": [
       {
         "key": "na1af72c84723",
@@ -56,6 +56,12 @@
         "like_count": 4
       },
       {
+        "key": "n3127f4bd96ae",
+        "name": "チャット占い・悩み相談の鑑定結果、「実はChatGPTのコピペ？」AI代筆を3秒で真",
+        "read_count": 2,
+        "like_count": 2
+      },
+      {
         "key": "nbb1854050855",
         "name": "マッチングアプリで「普段アプリ見ないのでLINE交換しよう」と言われたら？AI業者＆",
         "read_count": 1,
@@ -78,21 +84,15 @@
         "name": "新入社員・部下の「日報・週報・研修レポート」がChatGPT丸投げか3秒で判定する監",
         "read_count": 1,
         "like_count": 1
-      },
-      {
-        "key": "n92bd01c60010",
-        "name": "そのnote記事や副業ブログ、ChatGPTのコピペ量産？AI生成率を3秒で暴く無料",
-        "read_count": 1,
-        "like_count": 3
       }
     ]
   },
-  "note_like_delta": 4,
+  "note_like_delta": 5,
   "note_pv_delta": 2,
   "note_syndication": {
-    "published_total": 18,
+    "published_total": 20,
     "outreach_liked": 8,
-    "outreach_cumulative": 40
+    "outreach_cumulative": 48
   },
   "github": {
     "stars": 0,
@@ -110,7 +110,7 @@
   ],
   "executed_improvements": [
     "検索流入の間口を最大化するため、ロングテールSEO特化ページを全30ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html）",
-    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 18本 / 今回新規公開: 2本 / ターゲット見込み客への能動スキ営業: 8件完了・累計40件））",
+    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 20本 / 今回新規公開: 2本 / ターゲット見込み客への能動スキ営業: 8件完了・累計48件））",
     "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
     "全30ページの `sitemap.xml` 最終更新日を `2026-11-15` に更新し、IndexNow API へ一括インデックス通知を実行"
   ]
