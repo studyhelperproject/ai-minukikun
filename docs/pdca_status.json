@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-11-18 15:45:04 JST",
+  "evaluated_at": "2026-11-18 19:22:01 JST",
   "target_monthly_net_profit_yen": 10000,
   "note": {
     "status": "published",
@@ -22,7 +22,7 @@
     ],
     "creator_notes_count": 26,
     "remained_char_num": 206,
-    "total_pv": 27,
+    "total_pv": 28,
     "total_like_all_articles": 36,
     "top_articles_pv": [
       {
@@ -88,18 +88,19 @@
     ]
   },
   "note_like_delta": 0,
-  "note_pv_delta": 0,
+  "note_pv_delta": 1,
   "note_syndication": {
-    "published_total": 25,
-    "outreach_liked": 8,
-    "outreach_cumulative": 80
+    "published_total": 28,
+    "outreach_liked": 15,
+    "outreach_cumulative": 95
   },
   "github": {
-    "error": "HTTP Error 403: rate limit exceeded",
     "stars": 0,
-    "forks": 0
+    "watchers": 0,
+    "forks": 0,
+    "open_issues": 0
   },
-  "seo_pages_deployed": 30,
+  "seo_pages_deployed": 45,
   "cdn_health": {
     "checked": 10,
     "ok_200": 10
@@ -108,9 +109,9 @@
     "直近24時間のnote新規決済フラグが `false`（検索流入からLP経由でのサンプル体験→ペイウォール到達数の絶対量不足）"
   ],
   "executed_improvements": [
-    "検索流入の間口を最大化するため、ロングテールSEO特化ページを全30ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html）",
-    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 25本 / 今回新規公開: 0本 / ターゲット見込み客への能動スキ営業: 8件完了・累計80件））",
+    "検索流入の間口を最大化するため、ロングテールSEO特化ページを全45ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html, topic-youtube-shorts-script.html, topic-tiktok-reels-script.html, topic-kindle-kdp-book.html, topic-seo-agency-audit.html, topic-programming-code-ai.html, topic-nursing-report-ai.html, topic-civil-service-essay.html, topic-line-openchat-scam.html, topic-instagram-invest-dm.html, topic-qa-chiebukuro-ai.html, topic-pr-outsourcing-check.html, topic-ec-product-copy.html, topic-internal-survey-ai.html, topic-translation-deepl-audit.html, topic-salon-review-fake.html）",
+    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: noteハイブリッド有料化稼働中（累計公開済: 28本 / 今回新規: 3本 / 上位記事¥500レジ化: 10本 / スキ営業: 15件・累計95件））",
     "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
-    "全30ページの `sitemap.xml` 最終更新日を `2026-11-18` に更新し、IndexNow API へ一括インデックス通知を実行"
+    "全45ページの `sitemap.xml` 最終更新日を `2026-11-18` に更新し、IndexNow API へ一括インデックス通知を実行"
   ]
 }

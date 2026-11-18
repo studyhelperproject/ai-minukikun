@@ -2,7 +2,7 @@ name: Cloud SEO & Daily PDCA Autopilot
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "20 0,6,12 * * *"
   workflow_dispatch:
 
 permissions:

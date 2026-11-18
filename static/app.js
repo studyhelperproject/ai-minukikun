@@ -4,7 +4,7 @@
 let currentTab = "messenger";
 let isProUnlocked = localStorage.getItem("truthlens_pro") === "1";
 let isOwnerUnlocked = sessionStorage.getItem("truthlens_owner") === "1";
-let freeQuotaLeft = parseInt(localStorage.getItem("truthlens_quota") ?? "3", 10);
+let freeQuotaLeft = parseInt(localStorage.getItem("truthlens_quota") ?? "1", 10);
 let lastAnalysisResult = null;
 let selectedImageDataUrl = null;
 let selectedImageRawBytes = null;
@@ -94,7 +94,7 @@ const LEGAL_TEXTS = {
       <tr><th>商品代金以外の必要料金</th><td>インターネット接続料金・通信料金はお客様のご負担となります。</td></tr>
       <tr><th>お支払い方法</th><td>クレジットカード決済（Stripe）、note有料記事決済、PayPay・各種電子決済</td></tr>
       <tr><th>商品の引渡し時期</th><td>決済完了後（またはシリアルコード認証後）、即時にPro機能がアンロックされます。</td></tr>
-      <tr><th>返品・キャンセルについて</th><td>デジタルコンテンツの性質上、決済完了後の返品・返金には応じられません。まずは無料お試し枠（1日3回）にて動作をご確認の上ご購入ください。</td></tr>
+      <tr><th>返品・キャンセルについて</th><td>デジタルコンテンツの性質上、決済完了後の返品・返金には応じられません。まずは無料お試し枠（1日1回）にて動作をご確認の上ご購入ください。</td></tr>
     </table>
   `,
   privacy: `
@@ -154,7 +154,7 @@ function updateQuotaUI() {
     pill.innerHTML = `<span>👑 Pro監査パス有効:</span> <strong>無制限（全証拠アンロック済）</strong>`;
   } else {
     pill.classList.remove("pro-active");
-    pill.innerHTML = `<span>無料お試し残り:</span> <strong id="freeQuotaCount">${freeQuotaLeft} / 3回</strong>`;
+    pill.innerHTML = `<span>無料お試し残り:</span> <strong id="freeQuotaCount">${freeQuotaLeft} / 1回</strong>`;
   }
 }
 
@@ -224,7 +224,7 @@ function loadSample(sampleKey) {
 function checkQuotaBeforeRun() {
   if (isProUnlocked) return true;
   if (freeQuotaLeft <= 0) {
-    openPaywallModal("無料お試し3回使い切り");
+    openPaywallModal("無料お試し1回使い切り");
     return false;
   }
   freeQuotaLeft -= 1;
@@ -764,17 +764,34 @@ function renderAnalysisResult(data, origImgUrl = null) {
   if (data.stylometry) {
     const st = data.stylometry;
     styBox.style.display = "block";
-    styBox.innerHTML = `
-      <div style="font-weight: 800; font-size: 0.92rem; margin-bottom: 0.4rem; color: #38bdf8;">
-        🧬 本人文体との比較結果: 別人・AI代筆確率 ${escapeHtml(st.divergence_score)}%
-      </div>
-      <div style="font-size: 0.84rem; margin-bottom: 0.5rem;">${escapeHtml(st.verdict_text)}</div>
-      <div style="font-size: 0.78rem; color: var(--text-muted);">
-        ・普段の平均文長: <strong>${escapeHtml(st.reference_avg_sentence_len)}文字</strong> → 今回: <strong>${escapeHtml(st.target_avg_sentence_len)}文字</strong><br/>
-        ・普段の漢字率: <strong>${escapeHtml(st.reference_kanji_rate)}%</strong> → 今回: <strong>${escapeHtml(st.target_kanji_rate)}%</strong><br/>
-        ・主な根拠: ${st.key_differences.map(escapeHtml).join(" / ")}
-      </div>
-    `;
+    if (isProUnlocked) {
+      styBox.innerHTML = `
+        <div style="font-weight: 800; font-size: 0.92rem; margin-bottom: 0.4rem; color: #38bdf8;">
+          🧬 本人文体との比較結果: 別人・AI代筆確率 ${escapeHtml(st.divergence_score)}%
+        </div>
+        <div style="font-size: 0.84rem; margin-bottom: 0.5rem;">${escapeHtml(st.verdict_text)}</div>
+        <div style="font-size: 0.78rem; color: var(--text-muted);">
+          ・普段の平均文長: <strong>${escapeHtml(st.reference_avg_sentence_len)}文字</strong> → 今回: <strong>${escapeHtml(st.target_avg_sentence_len)}文字</strong><br/>
+          ・普段の漢字率: <strong>${escapeHtml(st.reference_kanji_rate)}%</strong> → 今回: <strong>${escapeHtml(st.target_kanji_rate)}%</strong><br/>
+          ・主な根拠: ${st.key_differences.map(escapeHtml).join(" / ")}
+        </div>
+      `;
+    } else {
+      styBox.innerHTML = `
+        <div style="font-weight: 800; font-size: 0.92rem; margin-bottom: 0.4rem; color: #38bdf8;">
+          🧬 本人文体との比較結果: 別人・AI代筆確率 ${escapeHtml(st.divergence_score)}%
+        </div>
+        <div style="position: relative; overflow: hidden; border-radius: 8px; padding: 0.55rem; background: rgba(15,23,42,0.55); border: 1px dashed rgba(56,189,248,0.45); cursor: pointer;" onclick="openPaywallModal('文体乖離詳細ロック解除')">
+          <div style="filter: blur(4px); user-select: none; opacity: 0.45; font-size: 0.78rem;">
+            ・普段の平均文長: XX.X文字 → 今回: XX.X文字<br/>
+            ・普段の漢字率: XX.X% → 今回: XX.X% / 決定的な文体乖離根拠
+          </div>
+          <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; color: #fde68a; text-align: center; padding: 0.4rem;">
+            🔒 本人文体との詳細な乖離数値・決定的な代筆根拠はパス認証で即時開示 [クリックして解除]
+          </div>
+        </div>
+      `;
+    }
   } else {
     styBox.style.display = "none";
   }
@@ -790,7 +807,9 @@ function renderAnalysisResult(data, origImgUrl = null) {
 
   const sigList = document.getElementById("signalsList");
   sigList.innerHTML = "";
-  (data.signals || []).forEach((sig) => {
+  const allSignals = data.signals || [];
+  const visibleSignals = isProUnlocked ? allSignals : allSignals.slice(0, 1);
+  visibleSignals.forEach((sig) => {
     const highClass = sig.weight >= 15 ? "high" : "";
     sigList.innerHTML += `
       <div class="signal-item ${highClass}">
@@ -799,6 +818,15 @@ function renderAnalysisResult(data, origImgUrl = null) {
       </div>
     `;
   });
+  if (!isProUnlocked && allSignals.length > 0) {
+    const lockedSigCount = Math.max(allSignals.length - 1, 1);
+    sigList.innerHTML += `
+      <div class="signal-item high" style="cursor: pointer; border-style: dashed; background: rgba(234, 179, 8, 0.1);" onclick="openPaywallModal('シグナル根拠ロック解除')">
+        <div style="font-weight: 800; color: #fde68a;">🔒 残り${lockedSigCount}件の決定的フォレンジック証拠（文長均一性・特定AI構文・メタデータ異常）はパス認証で即時開示 [クリックして解除]</div>
+        <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.25rem;">公式note（¥500〜）または7日間パス（¥980）のコード認証ですべての根拠と差し戻し文面が開示されます。</div>
+      </div>
+    `;
+  }
 
   const llmBox = document.getElementById("llmDeepBox");
   if (data.llm_deep_insight) {
@@ -914,7 +942,7 @@ async function redeemLicenseCode() {
     updateQuotaUI();
     closePaywallModal();
     recordLocalOrder("pass_980", "暗号化シリアルコード認証");
-    if (lastAnalysisResult) renderPremiumSection(lastAnalysisResult);
+    if (lastAnalysisResult) renderAnalysisResult(lastAnalysisResult, selectedImageDataUrl);
     refreshDashboard();
     alert("🎉 暗号化シリアルコードの照合に成功しました！Pro監査パスが有効化されました。");
   } else {
@@ -1132,11 +1160,11 @@ function toggleProStateManual() {
   isProUnlocked = !isProUnlocked;
   localStorage.setItem("truthlens_pro", isProUnlocked ? "1" : "0");
   if (!isProUnlocked) {
-    freeQuotaLeft = 3;
-    localStorage.setItem("truthlens_quota", "3");
+    freeQuotaLeft = 1;
+    localStorage.setItem("truthlens_quota", "1");
   }
   updateQuotaUI();
-  if (lastAnalysisResult) renderPremiumSection(lastAnalysisResult);
+  if (lastAnalysisResult) renderAnalysisResult(lastAnalysisResult, selectedImageDataUrl);
   closeSettingsModal();
 }
 
