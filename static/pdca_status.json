@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-11-17 16:20:15 JST",
+  "evaluated_at": "2026-11-18 15:45:04 JST",
   "target_monthly_net_profit_yen": 10000,
   "note": {
     "status": "published",
@@ -20,7 +20,7 @@
       "#大学レポート",
       "#AI見抜きくん"
     ],
-    "creator_notes_count": 25,
+    "creator_notes_count": 26,
     "remained_char_num": 206,
     "total_pv": 27,
     "total_like_all_articles": 36,
@@ -92,13 +92,12 @@
   "note_syndication": {
     "published_total": 25,
     "outreach_liked": 8,
-    "outreach_cumulative": 72
+    "outreach_cumulative": 80
   },
   "github": {
+    "error": "HTTP Error 403: rate limit exceeded",
     "stars": 0,
-    "watchers": 0,
-    "forks": 0,
-    "open_issues": 0
+    "forks": 0
   },
   "seo_pages_deployed": 30,
   "cdn_health": {
@@ -110,8 +109,8 @@
   ],
   "executed_improvements": [
     "検索流入の間口を最大化するため、ロングテールSEO特化ページを全30ページ体制へ拡充・再ビルド完了（新規追加: topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html）",
-    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 25本 / 今回新規公開: 1本 / ターゲット見込み客への能動スキ営業: 8件完了・累計72件））",
+    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: note自動投稿稼働中（累計公開済: 25本 / 今回新規公開: 0本 / ターゲット見込み客への能動スキ営業: 8件完了・累計80件））",
     "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
-    "全30ページの `sitemap.xml` 最終更新日を `2026-11-17` に更新し、IndexNow API へ一括インデックス通知を実行"
+    "全30ページの `sitemap.xml` 最終更新日を `2026-11-18` に更新し、IndexNow API へ一括インデックス通知を実行"
   ]
 }
