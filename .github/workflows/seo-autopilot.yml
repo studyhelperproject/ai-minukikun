@@ -18,6 +18,9 @@ jobs:
       - name: Run Autonomous Daily PDCA Evaluation & SEO Expansion
         env:
           NOTE_SESSION_COOKIE: ${{ secrets.NOTE_SESSION_COOKIE }}
+          THREADS_SESSION_COOKIE: ${{ secrets.THREADS_SESSION_COOKIE }}
+          THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+          THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
         run: |
           pip install requests python-dotenv
           python3 daily_pdca_engine.py

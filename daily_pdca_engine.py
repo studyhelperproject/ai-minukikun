@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 
 import auto_seo_publisher as seo
 import note_auto_publisher as note_pub
+import threads_auto_publisher as threads_pub
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(ROOT_DIR, "static")
@@ -641,6 +642,11 @@ def run_daily_pdca() -> None:
     seo.build_all_topic_pages()
     seo.patch_frontend_conversion_and_sync()
     note_syndication_res = note_pub.run_note_auto_syndication()
+    threads_res = threads_pub.run_threads_auto_syndication(max_posts_per_run=1, topics=seo.SEO_TOPICS)
+    if not threads_res.get("api_authenticated"):
+        bottlenecks.append(
+            "Threads自動投稿用認証（`THREADS_SESSION_COOKIE` または Meta公式 `THREADS_ACCESS_TOKEN`）が未設定のため、自アカウント投稿が待機中（全42投稿キュー生成済）"
+        )
     sync_github_gist_backlinks(seo.SEO_TOPICS)
 
     all_pages = ["", "lp-matching.html", "lp-crowdworks.html", "lp-report.html", "lp-mercari.html"] + [
@@ -654,6 +660,9 @@ def run_daily_pdca() -> None:
     )
     actions_taken.append(
         f"note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: {note_syndication_res.get('message', note_syndication_res.get('mode'))}）"
+    )
+    actions_taken.append(
+        f"Threads自動投稿エンジンを実行（ステータス: {threads_res.get('message', threads_res.get('mode'))}）"
     )
     actions_taken.append(
         "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用"
@@ -672,6 +681,13 @@ def run_daily_pdca() -> None:
             "published_total": note_syndication_res.get("published_total", 0),
             "outreach_liked": note_syndication_res.get("outreach", {}).get("liked_count", 0),
             "outreach_cumulative": note_syndication_res.get("outreach", {}).get("total_engaged_cumulative", 0),
+        },
+        "threads_syndication": {
+            "api_authenticated": threads_res.get("api_authenticated", False),
+            "queued_total": threads_res.get("queued_total", 0),
+            "published_total": threads_res.get("published_total", 0),
+            "newly_published": threads_res.get("newly_published", 0),
+            "mode": threads_res.get("mode", "unknown"),
         },
         "github": gh_metrics,
         "seo_pages_deployed": len(all_pages),
@@ -712,6 +728,7 @@ def run_daily_pdca() -> None:
 | **note 全記事累計PV（閲覧数）** | **{note_metrics.get('total_pv', 0)} PV** | `{pv_diff:+d}` PV | 認証ダッシュボードAPI (`/api/v1/stats/pv`) 実測値 |
 | **note 全記事累計スキ（Like）数** | **{note_metrics.get('total_like_all_articles', 0)} 件** (有料記事単体: {note_metrics.get('like_count', 0)}件) | `{like_diff:+d}` 件 | 記事あたりのスキ率が高水準（PV対比約69%）・母数拡大を推進中 |
 | **note 自動公開済記事数 & 能動営業数** | **公開 {note_syndication_res.get('published_total', 0)} 本** / **スキ営業 累計 {note_syndication_res.get('outreach', {}).get('total_engaged_cumulative', 0)} 件** | 自動アウトリーチ稼働中 | 見込み客（#クラウドワークス, #マッチングアプリ, #就活 等）への通知アプローチ |
+| **Threads 自アカウント自動投稿** | **公開 {threads_res.get('published_total', 0)} 本** / **待機キュー {threads_res.get('queued_total', 0)} 本** | `{threads_res.get('mode')}` | {threads_res.get('message')} |
 | **直近24時間以内のnote購入フラグ** | `{note_metrics.get('is_purchased_within_last_24_hours')}` | `is_purchased_within_last_24_hours` | **最優先改善ターゲット（検索流入数×能動営業×LP遷移率×ペイウォールCVRの引き上げ）** |
 | **note 設定ハッシュタグ数** | **{len(note_metrics.get('hashtags', []))} 個** ({', '.join(note_metrics.get('hashtags', []))}) | 最適化済 | 10大主要ハッシュタグ設定完了 |
 | **公開SEO特化ページ総数** | **全 {len(all_pages)} ページ** | `sitemap.xml` 同期済 | Googleリッチリザルト用 `FAQPage` JSON-LD 構造化データを全記事に実装済 |
