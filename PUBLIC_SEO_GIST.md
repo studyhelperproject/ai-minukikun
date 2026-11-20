@@ -1,6 +1,6 @@
-# 【無料診断ツール公開】LINE・マッチングアプリのAI業者や、クラウドワークス外注記事のChatGPT丸投げ・大学レポート代筆を3秒で見抜く方法
+# 【無料診断ツール公開】LINE・マッチングアプリのAI業者や、クラウドワークス外注記事のChatGPT丸投げ・大学レポート代筆を3秒で見抜く方法（Japanese AI Text Detector & Freelance Audit Tool）
 
-近年、マッチングアプリ（ペアーズ・タップル・with等）でのAI自動返信ボットやロマンス詐欺誘導、クラウドソーシング（クラウドワークス・ランサーズ）でのChatGPT丸投げ記事納品、および就活ES・大学レポートのAI代筆が急増しています。
+近年、マッチングアプリ（ペアーズ・タップル・with等）でのAI自動返信ボットやロマンス詐欺誘導、クラウドソーシング（クラウドワークス・ランサーズ）や越境EC（Amazon・中華系ゲームローカライズ）でのChatGPT/DeepL丸投げ記事納品、および就活ES・大学レポートのAI代筆が急増しています。
 
 そこで、**日本語の統計特徴量（文長揺らぎ・漢字含有率・助詞リズム）と本人文体比較（Stylometry）、およびWord内部リビジョン履歴・画像ELA（圧縮誤差ヒートマップ）** をブラウザ内（外部サーバー保存ゼロ）で一括監査できるWebツール **『AI見抜きくん Pro』** を公開しました。
 
@@ -8,14 +8,14 @@
 
 ## 🔗 公式リンク・徹底監査パス（シリアルコード即時発行）
 
-1. **🔍 メイン総合診断ツール（AI見抜きくん Pro・1日3回無料）**
+1. **🔍 メイン総合診断ツール（AI見抜きくん Pro・1日1回無料試食）**
    - https://studyhelperproject.github.io/ai-minukikun/
-2. **🎫 7日間・徹底監査パス（公式note ¥980・全証拠＆コピペ即利用可能な追及テンプレ3選＆監査証明書PDF出力）**
+2. **🎫 7日間・徹底監査パス（公式note ¥980・全証拠＆コピペ即利用可能な追及テンプレ18種＆監査証明書PDF出力 / International Credit Card Accepted）**
    - https://note.com/safe_swift4998/n/na1af72c84723
 
 ---
 
-## 📚 用途別・AI真贋監査＆見抜き方マニュアル全集（全30ページ・ワンクリックサンプル診断対応）
+## 📚 用途別・AI真贋監査＆見抜き方マニュアル全集（全47ページ・中国語/英語越境ガイド含む・ワンクリックサンプル診断対応）
 
 - [マッチングアプリ（ペアーズ・タップル・LINE）のAI業者・ロマンス詐欺を見抜く方法](https://studyhelperproject.github.io/ai-minukikun/lp-matching.html)
 - [クラウドワークス・ランサーズ外注記事のChatGPT丸投げ＆Wordリビジョン監査](https://studyhelperproject.github.io/ai-minukikun/lp-crowdworks.html)
@@ -41,6 +41,8 @@
 - [広報・PR記事やインタビュー原稿の「AI要約丸投げ」を検収前に見破る品質管理ツール](https://studyhelperproject.github.io/ai-minukikun/topic-press-release.html)
 - [その日本語ドキュメント、AI直訳・ChatGPT生成で不自然になっていない？自然度＆AI率診断](https://studyhelperproject.github.io/ai-minukikun/topic-translation-natural.html)
 - [推薦入試の志望理由書・奨学金エッセイ・社内昇格論文のAI生成率を提出前にセルフ監査](https://studyhelperproject.github.io/ai-minukikun/topic-scholarship-essay.html)
+- [【中国語圏・越境EC発注者向け】外注した日本語ライター・翻訳者の「ChatGPT/DeepL丸投げ」を3秒で監査（日文写手AI代写检测）](https://studyhelperproject.github.io/ai-minukikun/topic-zh-japanese-ai-audit.html)
+- [【海外発注者・ローカライズ担当向け】Detect ChatGPT & AI Copy-Paste in Outsourced Japanese Articles & Translations](https://studyhelperproject.github.io/ai-minukikun/topic-en-japanese-ai-audit.html)
 - [メルカリ出品の説明文が「AI自動生成テンプレ」？無在庫転売や悪質業者を3秒で見抜く](https://studyhelperproject.github.io/ai-minukikun/topic-mercari-description.html)
 - [美容・医療・士業メディアの外注記事、「ChatGPT丸投げ」によるYMYL順位下落リスクを検収前に阻止](https://studyhelperproject.github.io/ai-minukikun/topic-medical-blog.html)
 - [PTA挨拶や結婚式の祝辞、「ChatGPTで作ったでしょ？」と周囲にバレないための自然度チェック](https://studyhelperproject.github.io/ai-minukikun/topic-ptaspeech-greeting.html)

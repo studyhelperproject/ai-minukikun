@@ -202,13 +202,13 @@
     "url": "https://note.com/safe_swift4998/n/n1c6b98510dc2"
   },
   "topic-seo-agency-audit": {
-    "published_at": "2026-11-18 20:38:07",
-    "id": 191935306,
-    "key": "n3d23bce948e4",
+    "published_at": "2026-11-18 23:41:18",
+    "id": 191914079,
+    "key": "ncd49044b72a2",
     "price": 500,
     "hybrid_paid": true,
     "title": "月額10万円のSEO記事制作代行、実はAI生成を少し直しただけ？納品記事の品質抜き打ち監査",
-    "url": "https://note.com/safe_swift4998/n/n3d23bce948e4"
+    "url": "https://note.com/safe_swift4998/n/ncd49044b72a2"
   },
   "topic-programming-code-ai": {
     "published_at": "2026-11-18 20:38:11",
@@ -281,5 +281,32 @@
     "hybrid_paid": true,
     "title": "ネット通販の商品ページ・怪しいセールスLPが「AI生成翻訳＆量産詐欺サイト」か3秒判定",
     "url": "https://note.com/safe_swift4998/n/n29a49bf1d369"
+  },
+  "topic-zh-japanese-ai-audit": {
+    "published_at": "2026-11-18 23:41:08",
+    "id": 191914060,
+    "key": "nbaeef3309977",
+    "price": 500,
+    "hybrid_paid": true,
+    "title": "【中国語圏・越境EC発注者向け】外注した日本語ライター・翻訳者の「ChatGPT/DeepL丸投げ」を3秒で監査（日文写手AI代写检测）",
+    "url": "https://note.com/safe_swift4998/n/nbaeef3309977"
+  },
+  "topic-en-japanese-ai-audit": {
+    "published_at": "2026-11-18 23:41:13",
+    "id": 191914071,
+    "key": "n7e81ed27af4b",
+    "price": 500,
+    "hybrid_paid": true,
+    "title": "【海外発注者・ローカライズ担当向け】Detect ChatGPT & AI Copy-Paste in Outsourced Japanese Articles & Translations",
+    "url": "https://note.com/safe_swift4998/n/n7e81ed27af4b"
+  },
+  "topic-internal-survey-ai": {
+    "published_at": "2026-11-20 15:33:50",
+    "id": 192210258,
+    "key": "n8df9ae96d808",
+    "price": 500,
+    "hybrid_paid": true,
+    "title": "マーケティング調査・クラウドワークスアンケート回答の「ChatGPTコピペ報酬稼ぎ」を除外する",
+    "url": "https://note.com/safe_swift4998/n/n8df9ae96d808"
   }
 }

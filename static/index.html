@@ -255,6 +255,7 @@
         <div class="card-header">
           <div class="card-title">📊 AI真贋・フォレンジック監査結果</div>
           <div class="no-print" style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <button class="btn btn-outline btn-sm" onclick="shareResultOnThreads()">🧵 Threadsで共有</button>
             <button class="btn btn-outline btn-sm" onclick="shareResultOnX()">𝕏 診断結果をポスト</button>
             <button class="btn btn-outline btn-sm" onclick="shareResultOnLine()">💬 LINEで共有</button>
             <button class="btn btn-outline btn-sm" onclick="printAuditCertificate()">🖨️ 監査証明書PDF保存</button>
@@ -284,6 +285,9 @@
               <div id="analyzedTimestamp" style="font-size: 0.73rem; color: var(--text-muted); margin-top: 0.35rem;"></div>
             </div>
           </div>
+
+          <!-- Viral Share Bar (Threads & X) -->
+          <div id="viralShareBar" class="no-print" style="display: none; margin-bottom: 1.15rem;"></div>
 
           <!-- Quantitative Metrics -->
           <div id="metricsGrid" class="metrics-grid"></div>

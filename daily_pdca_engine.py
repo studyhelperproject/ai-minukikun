@@ -18,6 +18,44 @@ JST = timezone(timedelta(hours=9))
 # 自律追加用ロングテールSEOトピックプール（日次PDCAで未公開のものを自動追加して検索面を拡大する）
 EXPANSION_POOL = [
     {
+        "slug": "topic-zh-japanese-ai-audit.html",
+        "title": "日文写手・日语翻译外包ChatGPT/DeepL代写检测工具｜日本Amazon跨境电商・游戏本地化审核 | AI見抜きくん Pro",
+        "h1": "【中国語圏・越境EC発注者向け】外注した日本語ライター・翻訳者の「ChatGPT/DeepL丸投げ」を3秒で監査（日文写手AI代写检测）",
+        "desc": "针对中国・台湾・香港跨境电商（日本Amazon卖家）、日本游戏/App出海本地化团队：无需精通日语即可3秒检测外包日文写手・日语翻译是否使用ChatGPT/DeepL敷衍代写。国际信用卡可在note购买审核通行证（¥500/¥980）。",
+        "kw": "日语AI检测, 日文写手 ChatGPT 检测, 日本亚马逊 跨境电商 翻译审核, 日本語 外注 チェック 中国語, 遊戲本地化 日文審查",
+        "cta_tab": "stylometry",
+        "sample_key": "stylometry_case",
+        "body": "日本市場向けのAmazon商品ページ、プレスリリース、スマホゲームの日本語ローカライズを発注している中華圏（中国本土・台湾・香港・シンガポール）の越境EC運営者・ディレクターにとって、日本語外注ライターや翻訳者がChatGPT・DeepLをそのまま丸投げして不自然なAI日本語を納品する問題が急増しています（對於日本市場跨境電商賣家與遊戲出海團隊而言，外包日文寫手直接用ChatGPT敷衍交稿導致轉化率暴跌已成痛點）。『AI見抜きくん Pro』は日本語が母語でない海外発注者でも、直感的な『AI疑惑スコア(%)』『Word保存回数1回（Revision=1＝一括コピペの決定的証拠）』『普段のチャット連絡文と納品原稿の文体乖離』を一目で数値判定できます（即使您不懂日語，也能直接通過可視化百分比與Word編輯次數證據一眼識破敷衍交稿）。さらにnote記事は国際クレジットカード決済に対応しており、購入即時に『そのまま外注先へ送れる日本語の差し戻し＆返金交渉テンプレート』を取得できます。",
+        "checklist": [
+            "即使不懂日語也能確認：Word(.docx)的編輯保存次數（リビジョン）只有1次，代表寫手整篇複製貼上ChatGPT輸出內容",
+            "日文發包者日常溝通短句與正式交稿長文的漢字比例・句長變異係數（Burstiness CV）出現統計學上的劇烈乖離",
+            "日文文本充滿「まず第一に」「不可欠です」「総じて」等典型LLM翻譯腔與模板句型（ツール画面で赤色ハイライト表示）"
+        ],
+        "faqs": [
+            ("不懂日语的中国/台湾卖家能看懂检测结果并向日本写手维权吗？（日本語がわからなくても外注先に差し戻せますか？）", "完全可以。工具直接输出0-100%的AI嫌疑评分；购买note（¥500/¥980，支持国际Visa/Mastercard等信用卡）后，即可复制专业日文拒收与重改模板直接发给外包写手。"),
+            ("输入未公开的商品详情页或游戏文本会泄露吗？（機密テキストがサーバーに保存されませんか？）", "绝不保存。所有检测全部在您的浏览器本地内存中完成，零上传至外部服务器（完全ブラウザ内完結で外部送信ゼロ）。")
+        ]
+    },
+    {
+        "slug": "topic-en-japanese-ai-audit.html",
+        "title": "Japanese AI Text Detector & Freelance Writer Audit Tool | Detect ChatGPT & DeepL in Japanese Content | AI見抜きくん Pro",
+        "h1": "【海外発注者・ローカライズ担当向け】Detect ChatGPT & AI Copy-Paste in Outsourced Japanese Articles & Translations",
+        "desc": "Built for global PMs, game localization teams, and international SaaS marketers hiring Japanese freelance writers. Audit Japanese articles for ChatGPT copy-paste, Burstiness, and Word revision=1 in 3 seconds.",
+        "kw": "Japanese AI detector, detect ChatGPT Japanese text, audit Japanese freelance writer, Japanese localization QA, DeepL ChatGPT check",
+        "cta_tab": "stylometry",
+        "sample_key": "stylometry_case",
+        "body": "When managing Japanese SEO localization, SaaS marketing copy, or indie game scripts from outside Japan, non-native PMs and editors often struggle to tell whether an outsourced Japanese writer actually researched and localized the text—or simply pasted prompts into ChatGPT or DeepL. 'AI見抜きくん Pro' solves this blind spot in 3 seconds directly inside your browser (zero server uploads). You get an objective Japanese AI Probability Score (%), Burstiness (sentence-length CV), Word (.docx) single-save revision telemetry (proof of bulk paste), and stylometry comparison against the writer's casual chat messages. Unlocking the Pro Pass via note.com (accepts international credit cards at ¥500 / ¥980) gives you copy-paste Japanese Rejection & Refund Negotiation Templates written in business-grade Japanese.",
+        "checklist": [
+            "Word (.docx) deliverable shows Revision = 1, proving the writer bulk-pasted generated Japanese text and hit Save once",
+            "Stylometry mismatch: severe statistical gap between the writer's chat replies and their formal deliverable (Kanji rate & sentence CV)",
+            "High frequency of robotic Japanese LLM connectors ('まず第一に', '不可欠です', '総じて') flagged visually sentence by sentence"
+        ],
+        "faqs": [
+            ("Can non-Japanese speakers use this to confront a Japanese freelance writer or agency?", "Yes. The tool provides clear numerical evidence and PDF audit certificates. By unlocking the Pro Pass on note (¥500/¥980 via international credit card), you get ready-to-send Japanese revision and refund request templates."),
+            ("Is confidential SaaS, game, or PR content ever sent to an external AI server?", "Never. All statistical stylometry, Word metadata parsing, and image ELA analysis run 100% locally in your browser memory.")
+        ]
+    },
+    {
         "slug": "topic-mercari-description.html",
         "title": "メルカリ・ヤフオクの商品説明文がChatGPT自動生成か見分ける方法｜無在庫転売・詐欺出品対策 | AI見抜きくん Pro",
         "h1": "メルカリ出品の説明文が「AI自動生成テンプレ」？無在庫転売や悪質業者を3秒で見抜く",
@@ -484,14 +522,15 @@ def inject_next_seo_topic_if_needed() -> dict:
 
 
 def sync_github_gist_backlinks(all_topics: list) -> bool:
-    """外部ドメイン（gist.github.com）の公開記事に全30ページのバックリンクとnote決済リンクを自動同期"""
+    """外部ドメイン（gist.github.com）の公開記事に全ページの多言語バックリンクとnote決済リンクを自動同期"""
     gist_path = os.path.join(ROOT_DIR, "PUBLIC_SEO_GIST.md")
+    total_pages = 5 + len(all_topics)
     topic_links = "\n".join(
         f"- [{t['h1']}]({seo.BASE_URL}/{t['slug']})" for t in all_topics
     )
-    md = f"""# 【無料診断ツール公開】LINE・マッチングアプリのAI業者や、クラウドワークス外注記事のChatGPT丸投げ・大学レポート代筆を3秒で見抜く方法
+    md = f"""# 【無料診断ツール公開】LINE・マッチングアプリのAI業者や、クラウドワークス外注記事のChatGPT丸投げ・大学レポート代筆を3秒で見抜く方法（Japanese AI Text Detector & Freelance Audit Tool）
 
-近年、マッチングアプリ（ペアーズ・タップル・with等）でのAI自動返信ボットやロマンス詐欺誘導、クラウドソーシング（クラウドワークス・ランサーズ）でのChatGPT丸投げ記事納品、および就活ES・大学レポートのAI代筆が急増しています。
+近年、マッチングアプリ（ペアーズ・タップル・with等）でのAI自動返信ボットやロマンス詐欺誘導、クラウドソーシング（クラウドワークス・ランサーズ）や越境EC（Amazon・中華系ゲームローカライズ）でのChatGPT/DeepL丸投げ記事納品、および就活ES・大学レポートのAI代筆が急増しています。
 
 そこで、**日本語の統計特徴量（文長揺らぎ・漢字含有率・助詞リズム）と本人文体比較（Stylometry）、およびWord内部リビジョン履歴・画像ELA（圧縮誤差ヒートマップ）** をブラウザ内（外部サーバー保存ゼロ）で一括監査できるWebツール **『AI見抜きくん Pro』** を公開しました。
 
@@ -499,14 +538,14 @@ def sync_github_gist_backlinks(all_topics: list) -> bool:
 
 ## 🔗 公式リンク・徹底監査パス（シリアルコード即時発行）
 
-1. **🔍 メイン総合診断ツール（AI見抜きくん Pro・1日3回無料）**
+1. **🔍 メイン総合診断ツール（AI見抜きくん Pro・1日1回無料試食）**
    - {seo.BASE_URL}/
-2. **🎫 7日間・徹底監査パス（公式note ¥980・全証拠＆コピペ即利用可能な追及テンプレ3選＆監査証明書PDF出力）**
+2. **🎫 7日間・徹底監査パス（公式note ¥980・全証拠＆コピペ即利用可能な追及テンプレ18種＆監査証明書PDF出力 / International Credit Card Accepted）**
    - {seo.NOTE_URL}
 
 ---
 
-## 📚 用途別・AI真贋監査＆見抜き方マニュアル全集（全30ページ・ワンクリックサンプル診断対応）
+## 📚 用途別・AI真贋監査＆見抜き方マニュアル全集（全{total_pages}ページ・中国語/英語越境ガイド含む・ワンクリックサンプル診断対応）
 
 - [マッチングアプリ（ペアーズ・タップル・LINE）のAI業者・ロマンス詐欺を見抜く方法]({seo.BASE_URL}/lp-matching.html)
 - [クラウドワークス・ランサーズ外注記事のChatGPT丸投げ＆Wordリビジョン監査]({seo.BASE_URL}/lp-crowdworks.html)
@@ -517,6 +556,29 @@ def sync_github_gist_backlinks(all_topics: list) -> bool:
     with open(gist_path, "w", encoding="utf-8") as f:
         f.write(md)
     return True
+
+
+def ping_indexnow_all(all_pages: list) -> dict:
+    """IndexNow APIへ全公開URLを一括通知（GitHub ActionsのSyntaxError要因も完全排除）"""
+    key = "426d5b75c2bb457ca034a31745a2300b"
+    url_list = [f"{seo.BASE_URL}/{p}" if p else f"{seo.BASE_URL}/" for p in all_pages]
+    payload = {
+        "host": "studyhelperproject.github.io",
+        "key": key,
+        "keyLocation": f"{seo.BASE_URL}/{key}.txt",
+        "urlList": url_list,
+    }
+    try:
+        req = urllib.request.Request(
+            "https://api.indexnow.org/indexnow",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return {"ok": resp.status in (200, 202), "status": resp.status, "submitted_urls": len(url_list)}
+    except Exception as e:
+        return {"ok": False, "error": str(e), "submitted_urls": len(url_list)}
 
 
 def update_frontend_pdca_telemetry(snapshot: dict) -> None:
@@ -584,6 +646,7 @@ def run_daily_pdca() -> None:
     all_pages = ["", "lp-matching.html", "lp-crowdworks.html", "lp-report.html", "lp-mercari.html"] + [
         t["slug"] for t in seo.SEO_TOPICS
     ]
+    indexnow_res = ping_indexnow_all(all_pages)
     cdn_health = verify_live_cdn_status(all_pages)
 
     actions_taken.append(
@@ -596,7 +659,7 @@ def run_daily_pdca() -> None:
         "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用"
     )
     actions_taken.append(
-        f"全{len(all_pages)}ページの `sitemap.xml` 最終更新日を `{datetime.now(JST).strftime('%Y-%m-%d')}` に更新し、IndexNow API へ一括インデックス通知を実行"
+        f"全{len(all_pages)}ページの `sitemap.xml` 最終更新日を `{datetime.now(JST).strftime('%Y-%m-%d')}` に更新し、IndexNow API へ一括インデックス通知を実行（status: {indexnow_res.get('status', indexnow_res.get('error'))}）"
     )
 
     snapshot = {

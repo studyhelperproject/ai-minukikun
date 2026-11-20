@@ -734,6 +734,29 @@ function renderAnalysisResult(data, origImgUrl = null) {
   document.getElementById("verdictSummary").innerText = data.summary || "";
   document.getElementById("analyzedTimestamp").innerText = `監査証明書ID: #JP-${Number(data.scan_id) || 101} | 検査日時: ${data.analyzed_at || ""}`;
 
+  const shareBar = document.getElementById("viralShareBar");
+  if (shareBar) {
+    const scoreVal = Number(data.ai_probability) || 85;
+    const shareMsg = `『AI見抜きくん Pro』で文章をフォレンジック検査した結果、AI生成・業者疑惑スコアは【${scoreVal}%（${data.verdict_badge || ""}）】でした。 #AI見抜きくん #ChatGPT #Webライター https://studyhelperproject.github.io/ai-minukikun/`;
+    const encMsg = encodeURIComponent(shareMsg);
+    shareBar.style.display = "flex";
+    shareBar.style.alignItems = "center";
+    shareBar.style.justifyContent = "space-between";
+    shareBar.style.gap = "0.6rem";
+    shareBar.style.flexWrap = "wrap";
+    shareBar.style.padding = "0.65rem 0.9rem";
+    shareBar.style.borderRadius = "10px";
+    shareBar.style.background = "rgba(56, 189, 248, 0.08)";
+    shareBar.style.border = "1px solid rgba(56, 189, 248, 0.35)";
+    shareBar.innerHTML = `
+      <span style="font-size: 0.8rem; font-weight: 700; color: #38bdf8;">📢 この判定結果をSNSで共有・注意喚起する（1クリック投稿）</span>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <a href="https://www.threads.net/intent/post?text=${encMsg}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">🧵 Threadsで結果を投稿</a>
+        <a href="https://twitter.com/intent/tweet?text=${encMsg}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">𝕏 ポストして拡散</a>
+      </div>
+    `;
+  }
+
   const mGrid = document.getElementById("metricsGrid");
   mGrid.innerHTML = "";
   if (data.metrics) {
@@ -1108,6 +1131,14 @@ function updateDashboardUI(dash) {
       `;
     });
   }
+}
+
+function shareResultOnThreads() {
+  const score = lastAnalysisResult ? lastAnalysisResult.ai_probability : 88;
+  const badge = lastAnalysisResult ? lastAnalysisResult.verdict_badge : "AI生成の可能性【極高】";
+  const shareUrl = "https://studyhelperproject.github.io/ai-minukikun/";
+  const text = `『AI見抜きくん Pro』で文章をフォレンジック検査した結果、AI生成・業者疑惑スコアは【${score}%（${badge}）】でした。 #AI見抜きくん #ChatGPT #Webライター ${shareUrl}`;
+  window.open(`https://www.threads.net/intent/post?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
 }
 
 function shareResultOnX() {

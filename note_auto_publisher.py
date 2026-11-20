@@ -36,8 +36,12 @@ RECOMMENDED_HASHTAGS = [
     "#AI見抜きくん",
 ]
 
-# 能動的エンゲージメント（スキ回り）対象キーワード群（15タグ体制）
+# 能動的エンゲージメント（スキ回り）対象キーワード群（Threads・越境EC・翻訳含む19タグ体制）
 OUTREACH_SEARCH_QUERIES = [
+    "#Threads",
+    "#越境EC",
+    "#中国輸入",
+    "#翻訳",
     "#YouTube台本",
     "#動画編集",
     "#シナリオライター",
@@ -259,24 +263,52 @@ def build_note_html_for_topic(topic: dict) -> str:
     return build_hybrid_note_payload(topic)["full_body"]
 
 
+def select_topic_hashtags(topic: dict) -> list:
+    """同一10タグの反復によるスパムフィルタ発動を防ぐため、トピック特化の4〜5タグのみを厳選付与"""
+    slug = topic.get("slug", "")
+    text = f"{slug} {topic.get('kw', '')} {topic.get('h1', '')}".lower()
+    tags = ["#ChatGPT", "#AI見抜きくん"]
+    keyword_rules = [
+        (("zh-", "中国", "跨境"), ["#越境EC", "#中国語", "#翻訳"]),
+        (("en-", "english", "localization"), ["#翻訳", "#英語", "#海外ビジネス"]),
+        (("crowdworks", "lancers", "seo", "youtube", "tiktok", "kindle", "pr-"), ["#Webライター", "#クラウドワークス", "#外注"]),
+        (("pairs", "konkatsu", "romance", "openchat", "instagram", "giveaway"), ["#マッチングアプリ", "#婚活", "#詐欺対策"]),
+        (("gakuchika", "univ", "book-review", "scholarship", "nursing", "civil", "programming"), ["#就活", "#ガクチカ", "#大学レポート"]),
+        (("mercari", "ec-", "google-review", "salon"), ["#メルカリ", "#副業", "#セキュリティ"]),
+    ]
+    for triggers, cand_tags in keyword_rules:
+        if any(tr in text for tr in triggers):
+            for ct in cand_tags:
+                if ct not in tags:
+                    tags.append(ct)
+            break
+    if len(tags) < 4:
+        for fallback in ["#AI", "#Webライター", "#副業"]:
+            if fallback not in tags:
+                tags.append(fallback)
+    return tags[:5]
+
+
 def generate_local_note_packages() -> list:
     """全SEOトピックのnote投稿用ハイブリッドHTMLパッケージを生成"""
     os.makedirs(NOTE_EXPORT_DIR, exist_ok=True)
     generated = []
     for idx, t in enumerate(seo.SEO_TOPICS, 1):
         payload = build_hybrid_note_payload(t)
+        tags = select_topic_hashtags(t)
         slug_base = t["slug"].replace(".html", "")
         out_file = os.path.join(NOTE_EXPORT_DIR, f"{idx:02d}_{slug_base}.html")
         with open(out_file, "w", encoding="utf-8") as f:
             f.write(
                 f"<!-- Title: {t['h1']} -->\n"
-                f"<!-- Hashtags: {' '.join(RECOMMENDED_HASHTAGS)} -->\n"
+                f"<!-- Hashtags: {' '.join(tags)} -->\n"
                 f"{payload['full_body']}\n"
             )
         generated.append(
             {
                 "slug": slug_base,
                 "title": t["h1"],
+                "tags": tags,
                 "file": out_file,
                 "html": payload["full_body"],
                 "free_body": payload["free_body"],
@@ -764,7 +796,7 @@ def run_proactive_target_engagement(cookies: dict, max_likes_per_run: int = 15) 
     }
 
 
-def run_note_auto_syndication(max_posts_per_run: int = 3, max_likes_per_run: int = 15) -> dict:
+def run_note_auto_syndication(max_posts_per_run: int = 1, max_likes_per_run: int = 5) -> dict:
     packages = generate_local_note_packages()
     cookies = get_note_cookies_via_api_or_env()
 
@@ -801,6 +833,7 @@ def run_note_auto_syndication(max_posts_per_run: int = 3, max_likes_per_run: int
             cookies=cookies,
             title=pkg["title"],
             html_body=pkg["html"],
+            tags=pkg.get("tags"),
             free_body=pkg["free_body"],
             pay_body=pkg["pay_body"],
             separator=pkg["separator"],
@@ -826,7 +859,7 @@ def run_note_auto_syndication(max_posts_per_run: int = 3, max_likes_per_run: int
         else:
             break
 
-    # 4. 能動的アウトリーチ（15タグ×最大15件スキ回り）の実行
+    # 4. 能動的アウトリーチ（スパム抑止のため1回5件に適正化）の実行
     outreach_res = run_proactive_target_engagement(cookies, max_likes_per_run=max_likes_per_run)
 
     return {
@@ -847,5 +880,5 @@ def run_note_auto_syndication(max_posts_per_run: int = 3, max_likes_per_run: int
 
 
 if __name__ == "__main__":
-    out = run_note_auto_syndication(max_posts_per_run=3, max_likes_per_run=15)
+    out = run_note_auto_syndication(max_posts_per_run=1, max_likes_per_run=5)
     print(json.dumps(out, ensure_ascii=False, indent=2))
