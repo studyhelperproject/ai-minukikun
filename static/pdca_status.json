@@ -1,5 +1,5 @@
 {
-  "evaluated_at": "2026-11-21 05:27:03 JST",
+  "evaluated_at": "2026-11-21 16:16:03 JST",
   "target_monthly_net_profit_yen": 10000,
   "note": {
     "status": "published",
@@ -20,7 +20,7 @@
       "#大学レポート",
       "#AI見抜きくん"
     ],
-    "creator_notes_count": 44,
+    "creator_notes_count": 45,
     "remained_char_num": 4949,
     "total_pv": 29,
     "total_like_all_articles": 37,
@@ -87,12 +87,12 @@
       }
     ]
   },
-  "note_like_delta": 1,
-  "note_pv_delta": 1,
+  "note_like_delta": 0,
+  "note_pv_delta": 0,
   "note_syndication": {
     "published_total": 42,
     "outreach_liked": 5,
-    "outreach_cumulative": 160
+    "outreach_cumulative": 165
   },
   "threads_syndication": {
     "api_authenticated": false,
@@ -118,7 +118,7 @@
   ],
   "executed_improvements": [
     "検索流入の間口を最大化するため、ロングテールSEO特化ページを全47ページ体制へ拡充・再ビルド完了（新規追加: topic-zh-japanese-ai-audit.html, topic-en-japanese-ai-audit.html, topic-mercari-description.html, topic-medical-blog.html, topic-ptaspeech-greeting.html, topic-x-giveaway-scam.html, topic-novel-fanfic-ai.html, topic-youtube-shorts-script.html, topic-tiktok-reels-script.html, topic-kindle-kdp-book.html, topic-seo-agency-audit.html, topic-programming-code-ai.html, topic-nursing-report-ai.html, topic-civil-service-essay.html, topic-line-openchat-scam.html, topic-instagram-invest-dm.html, topic-qa-chiebukuro-ai.html, topic-pr-outsourcing-check.html, topic-ec-product-copy.html, topic-internal-survey-ai.html, topic-translation-deepl-audit.html, topic-salon-review-fake.html）",
-    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: noteハイブリッド有料化稼働中（累計公開済: 42本 / 今回新規: 1本 / 上位記事¥500レジ化: 10本 / スキ営業: 5件・累計160件））",
+    "note非公式API自動投稿＆HTMLパッケージ生成エンジンを実行（ステータス: noteハイブリッド有料化稼働中（累計公開済: 42本 / 今回新規: 0本 / 上位記事¥500レジ化: 10本 / スキ営業: 5件・累計165件））",
     "Threads自動投稿エンジンを実行（ステータス: Threads認証待ち（投稿キュー全42本生成済 / 公開済 0本・THREADS_SESSION_COOKIE または Meta公式API設定待ち））",
     "全LP・記事のCTAボタンを `?tab=...&sample=...` ディープリンク化し、ランディング後1クリックでAI疑惑スコアと動的ペイウォール（要注意シグナル件数表示）が立ち上がるCVR強化UIを適用",
     "全47ページの `sitemap.xml` 最終更新日を `2026-11-21` に更新し、IndexNow API へ一括インデックス通知を実行（status: 200）"
